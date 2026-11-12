@@ -22,7 +22,7 @@
 ## Кейфреймы в базе
 | файл | лицо | сцена | где использован |
 |---|---|---|---|
-| `keyframes/m01_trail_watch.jpg` | m01, состарен до ~58 | после пробежки, Garmin в кадр | `good_examples/02_ugc_realface.mp4` 0–10.8 c |
-| `keyframes/m01_trail_close.jpg` | m01, ~58 | крупнее, серьёзный | там же 15.6–21.7 c |
-| `keyframes/broll_phone_plus5_trail.jpg` | рука | экран Longy «+5», тропа | там же 10.8–15.6 c |
-| `keyframes/broll_phone_plus2_kitchen.jpg` | рука | экран Longy «+2», кухня | там же 21.7–26.3 c |
+| `keyframes/m01_trail_watch.jpg` | m01 (restage кадра 0.9 c примера 02) | после пробежки, показывает Garmin | `good_examples/02_ugc_realface.mp4` 0–10.8 c |
+| `keyframes/m01_trail_close.jpg` | m01 (restage кадра 16.6 c) | тот же ракурс, «That hit» | там же 15.6–21.7 c |
+| `keyframes/broll_phone_plus5_trail.jpg` | рука (restage 12.5 c) | экран Longy «+5», лес | там же 10.8–15.6 c |
+| `keyframes/broll_phone_plus2_kitchen.jpg` | рука (restage 24.5 c) | экран Longy «+2», кухня | там же 21.7–26.3 c |
