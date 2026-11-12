@@ -11,7 +11,9 @@ edit.json:
 Клипы приводятся к 1080×1920 / 30 fps (cover-кроп), звук клипов отбрасывается.
 У клипа можно задать "blur": 1.0 — лёгкий gblur (правило: лёгкий блюр на сгенерированных кадрах).
 """
-import json, subprocess, sys
+import json, subprocess, sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from text_guard import guard  # текст на видео только из HTML (rules/design-pass.md)
 
 e = json.load(open(sys.argv[1])); out = sys.argv[2]
 args, parts = [], []
@@ -24,6 +26,7 @@ n = len(e["clips"])
 args += ["-i", e["overlay"], "-i", e["audio"]]
 fc = ";".join(parts) + ";" + "".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1[base];" \
      f"[{n}:v]fps=30,setpts=PTS-STARTPTS[ov];[base][ov]overlay=eof_action=pass:format=auto[v]"
+guard([*args, fc])
 subprocess.run(["ffmpeg", "-v", "error", "-y", *args, "-filter_complex", fc, "-map", "[v]", "-map", f"{n + 1}:a",
                 "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
                 "-shortest", "-movflags", "+faststart", out], check=True)
