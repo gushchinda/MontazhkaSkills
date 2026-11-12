@@ -3,7 +3,13 @@
 python3 scripts/ugc_keyframe.py <face.jpg> <out.png> "<описание сцены>" [доп. референс.jpg ...]
 FAL_KEY — из окружения. ~$0.15 за кадр.
 """
-import sys, urllib.request, fal_client
+import sys, httpx, fal_client
+
+
+def _dl(url, out):
+    # httpx (certifi), а не urllib: у python.org-Python на маке нет системных сертификатов
+    open(out, 'wb').write(httpx.get(url, timeout=300, follow_redirects=True).content)
+    return out
 
 FACE_LOCK = ("Keep the EXACT same person from the first reference photo: same face shape, eyes, nose, jaw, "
              "ears, hairline and skin tone. Do not beautify him, do not make him look like a model. ")
@@ -18,8 +24,7 @@ def keyframe(face, out, scene, *refs):
     r = fal_client.subscribe("fal-ai/nano-banana-pro/edit", arguments={
         "prompt": FACE_LOCK + scene + REALISM, "image_urls": urls,
         "aspect_ratio": "9:16", "num_images": 1, "resolution": "2K"})
-    urllib.request.urlretrieve(r["images"][0]["url"], out)
-    return out
+    return _dl(r["images"][0]["url"], out)
 
 
 if __name__ == "__main__":

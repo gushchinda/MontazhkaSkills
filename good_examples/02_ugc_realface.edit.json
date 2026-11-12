@@ -1,0 +1,31 @@
+{
+ "audio": "work/ugc/voice.wav",
+ "overlay": "work/ugc/overlay.mov",
+ "clips": [
+  {
+   "src": "work/ugc/talk1.mp4",
+   "in": 0,
+   "dur": 10.85
+  },
+  {
+   "src": "work/ugc/phone1.mp4",
+   "in": 0,
+   "dur": 4.75
+  },
+  {
+   "src": "work/ugc/talk2.mp4",
+   "in": 0,
+   "dur": 6.1
+  },
+  {
+   "src": "work/ugc/phone2.mp4",
+   "in": 0.4,
+   "dur": 4.6
+  },
+  {
+   "src": "bad_examples/02_example_ugc.mp4",
+   "in": 26.4,
+   "dur": 2.4
+  }
+ ]
+}
