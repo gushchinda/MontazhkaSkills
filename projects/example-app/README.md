@@ -11,3 +11,7 @@
 
 Озвучка и оверлей генерируются в `work/` (не в git): `work/ugc/T1.wav`, `T2.wav`, `voice.wav`, `overlay.mov`
 (`render_html.py templates/enum_overlay/overlay.html projects/example-app/voice_words.json 0 26.3 work/ugc/overlay.mov --alpha --cfg projects/example-app/overlay.json --size 1080x1920`).
+
+
+`brand/app_icon_placeholder.png` и `screens/plus5.png`, `screens/plus2.png` — нейтральные заглушки для примеров.
+В реальном проекте иконку берём из App Store (rules/end-card.md), экраны — настоящие скриншоты приложения.
