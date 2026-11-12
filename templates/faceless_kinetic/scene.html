@@ -1,0 +1,171 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Faceless-вставка, опция A «Kinetic Data» (пересборка bad_examples/01, отрезок 5.4–27.0 c).
+     Рендер детерминированный: window.render(t) рисует кадр на секунду t (время ролика).
+     Рендерит scripts/render_html.py. Тайминги = слова озвучки (whisper word timestamps). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800;900&family=Inter:wght@500;600;700&display=block" rel="stylesheet">
+<style>
+:root{--ink:#0B0E13;--ink2:#151A22;--line:rgba(255,255,255,.08);--txt:#F4F1EA;--mute:rgba(244,241,234,.55);--acc:#FF5B2E;--acc2:#FF8A4C;--good:#3DDC97}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:720px;height:1280px;overflow:hidden;background:var(--ink);color:var(--txt);font-family:'Inter Tight',sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden}
+.bg{position:absolute;inset:-20%;background:
+ radial-gradient(60% 40% at 50% 38%,rgba(255,91,46,.16),transparent 70%),
+ radial-gradient(50% 35% at 80% 90%,rgba(61,220,151,.06),transparent 70%),
+ linear-gradient(180deg,#0B0E13,#10141B 60%,#0B0E13)}
+.grain{position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.abs{position:absolute;will-change:transform,opacity}
+.kicker{font:600 22px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.metric{left:48px;right:48px;height:220px;border-radius:36px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid var(--line);padding:30px 36px;overflow:hidden;transform-origin:50% 0}
+.metric .lab{font:600 24px/1 Inter;color:var(--mute);letter-spacing:.02em}
+.metric .num{font-weight:900;font-size:128px;line-height:1;letter-spacing:-.04em;margin-top:18px;font-variant-numeric:tabular-nums}
+.metric .unit{font-weight:700;font-size:28px;color:var(--mute);margin-left:10px;letter-spacing:0}
+.metric svg{position:absolute;right:28px;bottom:34px;width:300px;height:110px}
+.metric .idx{position:absolute;right:36px;top:30px;font:700 22px/1 Inter;color:var(--acc)}
+.h1{left:48px;right:48px;font-weight:900;font-size:84px;line-height:.98;letter-spacing:-.035em}
+.h1 em{font-style:normal;color:var(--acc)}
+.giant{left:0;right:0;text-align:center;font-weight:900;letter-spacing:-.06em;line-height:.85}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;font:800 34px/1 'Inter Tight';background:var(--acc);color:#140703}
+.ringwrap{left:110px;top:300px;width:500px;height:500px}
+.list{left:48px;right:48px}
+.row{display:flex;align-items:center;gap:28px;min-height:170px;padding:24px 0;border-bottom:1px solid var(--line)}
+.row .n{font-weight:800;font-size:40px;width:84px;color:var(--mute);font-variant-numeric:tabular-nums}
+.row .w{font-weight:900;font-size:92px;letter-spacing:-.04em;line-height:1}
+.cap{left:40px;right:40px;bottom:150px;text-align:center;font-weight:800;font-size:46px;line-height:1.12;letter-spacing:-.01em;text-shadow:0 4px 24px rgba(0,0,0,.6)}
+.cap span{display:inline-block;margin:0 .12em}
+.cap .k{color:var(--acc)}
+.brand{left:48px;top:64px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:30px}
+.brand i{width:40px;height:40px;border-radius:11px;background:var(--acc);display:block}
+</style></head>
+<body><div id="stage">
+<div class="bg abs" id="bg"></div>
+<div class="brand abs" id="brand"><i></i>Example App</div>
+
+<!-- S1: три сигнала -->
+<div class="kicker abs" id="k1" style="left:48px;top:150px">Your watch, every day</div>
+<div class="metric abs" id="m1"><div class="lab">Cardio fitness · VO₂ max</div><div class="num"><span class="v">31</span><span class="unit">ml/kg/min</span></div><div class="idx">01</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 80 C40 70 60 30 100 40 S160 90 200 60 S260 20 300 30" fill="none" stroke="#FF5B2E" stroke-width="5" stroke-linecap="round"/></svg></div>
+<div class="metric abs" id="m2"><div class="lab">Heart rate variability</div><div class="num"><span class="v">34</span><span class="unit">ms</span></div><div class="idx">02</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 50 C30 90 70 90 110 50 S170 10 210 50 S270 90 300 60" fill="none" stroke="#FF5B2E" stroke-width="5" stroke-linecap="round"/></svg></div>
+<div class="metric abs" id="m3"><div class="lab">Resting heart rate</div><div class="num"><span class="v">64</span><span class="unit">bpm</span></div><div class="idx">03</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 60 C50 55 70 75 120 65 S190 40 230 55 S280 70 300 62" fill="none" stroke="#FF5B2E" stroke-width="5" stroke-linecap="round"/></svg></div>
+<div class="h1 abs" id="h1" style="top:1010px;font-size:76px">Your watch tracks <em>all three.</em></div>
+
+<!-- S2: I'm 57 -->
+<div class="kicker abs" id="k2" style="left:0;right:0;text-align:center;top:330px">Calendar age</div>
+<div class="giant abs" id="g57" style="top:390px;font-size:430px">57</div>
+
+<!-- S3: Example App age -->
+<div class="kicker abs" id="k3" style="left:0;right:0;text-align:center;top:230px">Example App age</div>
+<div class="abs ringwrap" id="ring"><svg viewBox="0 0 500 500" width="500" height="500">
+ <circle cx="250" cy="250" r="220" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="22"/>
+ <circle id="arc" cx="250" cy="250" r="220" fill="none" stroke="url(#gr)" stroke-width="22" stroke-linecap="round" transform="rotate(-90 250 250)" stroke-dasharray="1382" stroke-dashoffset="1382"/>
+ <defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#FF8A4C"/><stop offset="1" stop-color="#FF3D1F"/></linearGradient></defs></svg></div>
+<div class="giant abs" id="g61" style="top:415px;font-size:300px">57</div>
+<div class="abs" id="plus" style="left:0;right:0;top:870px;text-align:center"><span class="pill">+4 years older</span></div>
+<div class="h1 abs" id="h3" style="top:990px;text-align:center;font-size:64px">What to change <em>first</em></div>
+
+<!-- S4: перечисление -->
+<div class="kicker abs" id="k4" style="left:48px;top:230px">Your plan</div>
+<div class="list abs" id="list" style="top:290px">
+ <div class="row" id="r1"><div class="n">01</div><div class="w">Movement</div></div>
+ <div class="row" id="r2"><div class="n">02</div><div class="w">Nutrition</div></div>
+ <div class="row" id="r3"><div class="n">03</div><div class="w">Sleep &amp;<br>recovery</div></div>
+</div>
+
+<!-- S5: итог -->
+<div class="h1 abs" id="s5a" style="top:380px;font-size:96px">Same watch.</div>
+<div class="h1 abs" id="s5b" style="top:540px;font-size:62px;color:var(--mute)"><em>+</em> your biological age</div>
+<div class="h1 abs" id="s5c" style="top:630px;font-size:62px;color:var(--mute)"><em>+</em> a personal plan</div>
+
+<div class="cap abs" id="cap"></div>
+<div class="grain abs"></div>
+</div>
+<script>
+const W=(window.WORDS||[]);
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const eo=x=>1-Math.pow(1-cl(x),3);                 // easeOutCubic
+const eb=x=>{x=cl(x);const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)}; // easeOutBack
+const ei=x=>{x=cl(x);return x*x*x};
+const p=(t,a,d)=>cl((t-a)/d);                     // прогресс 0..1 на [a,a+d]
+function set(el,o,tx=0,ty=0,s=1,blur=0){el.style.opacity=o;el.style.transform=`translate(${tx}px,${ty}px) scale(${s})`;el.style.filter=blur?`blur(${blur}px)`:'none'}
+// вход/выход элемента: in в момент a, out в момент b
+function life(t,a,b,dIn=.35,dOut=.25){return Math.min(eo(p(t,a,dIn)),1-ei(p(t,b,dOut)))}
+
+// тайминги (сек времени ролика)
+const T={m1:5.22,m2:6.80,m3:8.74,all:10.10,s1out:12.25,age:12.44,s2out:13.7,example-app:13.86,bio:16.6,first:18.4,s3out:20.45,
+ mov:20.68,nut:21.50,slp:22.54,s4out:24.35,same:24.54,bioa:25.68,plan:27.30,end:27.0};
+
+function counter(el,val,t,a){const k=eo(p(t,a,.7));el.textContent=Math.round(val*k)}
+
+window.render=function(t){
+ // фон дышит
+ $('bg').style.transform=`scale(${1.04+0.02*Math.sin(t*.6)}) translateY(${Math.sin(t*.4)*10}px)`;
+ set($('brand'),eo(p(t,5.4,.4))*(1-ei(p(t,26.6,.3))));
+
+ // ---- S1: метрики. Каждая влетает крупно в центр, затем уезжает в стопку
+ const slots=[250,500,750];
+ [['m1',T.m1],['m2',T.m2],['m3',T.m3]].forEach(([id,a],i)=>{
+  const el=$(id), next=[T.m2,T.m3,T.all][i];
+  const enter=eb(p(t,a,.5));
+  const o=Math.min(eo(p(t,a,.25)),1-ei(p(t,T.s1out,.3)));
+  el.style.top=slots[i]+'px';
+  set(el,o,0,(1-enter)*90-ei(p(t,T.s1out,.3))*60,1.06-0.06*enter);
+  const active=t>=a&&t<next;
+  el.style.borderColor=active?'rgba(255,91,46,.75)':'rgba(255,255,255,.08)';
+  el.style.boxShadow=active?'0 0 60px rgba(255,91,46,.25)':'none';
+  el.querySelector('.num').style.color=(t>=next&&t<T.all)?'rgba(244,241,234,.55)':'var(--txt)';
+  counter(el.querySelector('.v'),({m1:31,m2:34,m3:64})[id],t,a);
+  const sp=el.querySelector('.sp');const L=420;sp.style.strokeDasharray=L;sp.style.strokeDashoffset=L*(1-eo(p(t,a+.15,.9)));
+ });
+ set($('k1'),life(t,5.3,T.s1out),0,0);
+ const h1=life(t,T.all,T.s1out);set($('h1'),h1,0,(1-eo(p(t,T.all,.45)))*40);
+ $('h1').querySelector('em').style.color=t>=10.96?'var(--acc)':'var(--txt)';
+
+ // ---- S2: 57
+ const g=life(t,T.age-.05,T.s2out,.3,.2);
+ set($('g57'),g,0,0,0.7+0.3*eb(p(t,T.age-.05,.45)) + 0.04*p(t,T.age,1.3));
+ set($('k2'),g);
+
+ // ---- S3: кольцо Example App-age
+ const s3=life(t,T.example-app,T.s3out,.4,.3);
+ set($('ring'),s3,0,0,0.9+0.1*eo(p(t,T.example-app,.6)));
+ set($('k3'),s3);
+ $('arc').style.strokeDashoffset=1382*(1-0.78*eo(p(t,T.example-app+.2,2.4)));
+ const g61=Math.min(eo(p(t,T.example-app+.2,.3)),1-ei(p(t,T.s3out,.3)));
+ set($('g61'),g61,0,0,1+0.08*Math.sin(Math.PI*p(t,T.bio,.6)));
+ $('g61').style.color=t>=T.bio+.5?'var(--txt)':'rgba(244,241,234,.6)';
+ $('g61').textContent=Math.round(57+4*eo(p(t,T.bio,.9)));
+ set($('plus'),Math.min(eo(p(t,17.25,.3)),1-ei(p(t,T.s3out,.3))),0,(1-eb(p(t,17.25,.45)))*40);
+ set($('h3'),Math.min(eo(p(t,T.first,.35)),1-ei(p(t,T.s3out,.3))),0,(1-eo(p(t,T.first,.4)))*30);
+ 
+
+ // ---- S4: перечисление 01/02/03, активный пункт оранжевый, прошлые гаснут
+ const s4=life(t,T.mov-.15,T.s4out,.3,.3);set($('k4'),s4);set($('list'),s4,0,-ei(p(t,T.s4out,.3))*60);
+ [['r1',T.mov],['r2',T.nut],['r3',T.slp]].forEach(([id,a],i,arr)=>{
+  const el=$(id),nx=arr[i+1]?arr[i+1][1]:99;
+  const e=eb(p(t,a,.4));
+  el.style.opacity=eo(p(t,a,.2));
+  el.style.transform=`translateX(${(1-e)*120}px)`;
+  const active=t>=a&&t<nx;const dim=t>=nx;
+  el.querySelector('.w').style.color=active?'var(--acc)':(dim?'rgba(244,241,234,.38)':'var(--txt)');
+  el.querySelector('.n').style.color=active?'var(--acc)':'var(--mute)';
+ });
+
+ // ---- S5: итог
+ [['s5a',T.same],['s5b',T.bioa],['s5c',T.plan-.6]].forEach(([id,a])=>{
+  set($(id),eo(p(t,a,.3))*(1-ei(p(t,26.75,.25))),0,(1-eb(p(t,a,.45)))*50);
+  if(id!='s5a')$(id).style.color=t>=a?'var(--txt)':'var(--mute)';
+ });
+
+ // ---- субтитры: окно до 3 слов, ключевое слово акцентом
+ const KEY=/^(cardio|variability|resting|three|57|example-app|biological|first|movement|nutrition|sleep|recovery|same|plan)/i;
+ const cur=W.filter(w=>w.s<=t&&t<w.e+.35);
+ let idx=W.findIndex(w=>w.s<=t&&t<(w.n??w.e+.4));
+ const big=(t>=T.all&&t<T.s1out)||(t>=T.age-.1&&t<T.s2out)||(t>=T.first&&t<T.s3out)||t>=T.mov-.15;
+ if(idx<0||big){$('cap').innerHTML='';return}
+ const st=Math.floor(idx/3)*3, grp=W.slice(st,st+3);
+ $('cap').innerHTML=grp.map((w,j)=>{
+  const on=st+j<=idx;const k=KEY.test(w.w)?' k':'';
+  const sc=st+j===idx?1+0.06*(1-eo(p(t,w.s,.18))):1;
+  return `<span class="${k}" style="opacity:${on?1:.28};transform:scale(${sc})">${w.w}</span>`}).join(' ');
+};
+</script></body></html>
