@@ -1,0 +1,180 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Faceless-вставка, опция A «Kinetic Data». Универсальный шаблон: тексты, цифры, цвета и тайминги
+     берутся из window.CFG (render_html.py --cfg projects/<проект>/faceless.json). Пример: projects/example-app/faceless.json.
+     Структура: S1 три метрики → S2 гигантская цифра → S3 кольцо «было→стало» → S4 список 01/02/03 → S5 итог из 3 строк.
+     Рендер детерминированный: window.render(t) рисует кадр на секунду t (время ролика).
+     Рендерит scripts/render_html.py. Тайминги = слова озвучки (whisper word timestamps). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800;900&family=Inter:wght@500;600;700&display=block" rel="stylesheet">
+<style>
+:root{--ink:#0B0E13;--ink2:#151A22;--line:rgba(255,255,255,.08);--txt:#F4F1EA;--mute:rgba(244,241,234,.55);--acc:#FF5B2E;--acc2:#FF8A4C;--good:#3DDC97}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:720px;height:1280px;overflow:hidden;background:var(--ink);color:var(--txt);font-family:'Inter Tight',sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden}
+.bg{position:absolute;inset:-20%;background:
+ radial-gradient(60% 40% at 50% 38%,rgba(255,91,46,.16),transparent 70%),
+ radial-gradient(50% 35% at 80% 90%,rgba(61,220,151,.06),transparent 70%),
+ linear-gradient(180deg,#0B0E13,#10141B 60%,#0B0E13)}
+.grain{position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.abs{position:absolute;will-change:transform,opacity}
+.kicker{font:600 22px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.metric{left:48px;right:48px;height:200px;border-radius:36px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid var(--line);padding:30px 36px;overflow:hidden;transform-origin:50% 0}
+.metric .lab{font:600 24px/1 Inter;color:var(--mute);letter-spacing:.02em}
+.metric .num{font-weight:900;font-size:112px;line-height:1;letter-spacing:-.04em;margin-top:14px;font-variant-numeric:tabular-nums}
+.metric .unit{font-weight:700;font-size:28px;color:var(--mute);margin-left:10px;letter-spacing:0}
+.metric svg{position:absolute;right:28px;bottom:34px;width:300px;height:110px}
+.metric .idx{position:absolute;right:36px;top:30px;font:700 22px/1 Inter;color:var(--acc)}
+.h1{left:48px;right:48px;font-weight:900;font-size:84px;line-height:.98;letter-spacing:-.035em}
+.h1 em{font-style:normal;color:var(--acc)}
+.giant{left:0;right:0;text-align:center;font-weight:900;letter-spacing:-.06em;line-height:.85}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;font:800 34px/1 'Inter Tight';background:var(--acc);color:#140703}
+.ringwrap{left:110px;top:300px;width:500px;height:500px}
+.list{left:48px;right:48px}
+.row{display:flex;align-items:center;gap:28px;min-height:170px;padding:24px 0;border-bottom:1px solid var(--line)}
+.row .n{font-weight:800;font-size:40px;width:84px;color:var(--mute);font-variant-numeric:tabular-nums}
+.row .w{font-weight:900;font-size:92px;letter-spacing:-.04em;line-height:1}
+.cap{left:40px;right:40px;bottom:270px;text-align:center;font-weight:800;font-size:46px;line-height:1.12;letter-spacing:-.01em;text-shadow:0 4px 24px rgba(0,0,0,.6)}
+.cap span{display:inline-block;margin:0 .12em}
+.cap .k{color:var(--acc)}
+.brand{left:48px;top:64px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:30px}
+.brand i{width:40px;height:40px;border-radius:11px;background:var(--acc);display:block}
+</style></head>
+<body><div id="stage">
+<div class="bg abs" id="bg"></div>
+<div class="brand abs" id="brand" data-lint-allow="top"><i></i><span data-k="brand"></span></div>
+
+<!-- S1: три сигнала -->
+<div class="kicker abs" id="k1" style="left:48px;top:150px" data-k="s1.kicker"></div>
+<div class="metric abs" id="m1"><div class="lab" data-k="s1.metrics.0.label"></div><div class="num"><span class="v"></span><span class="unit" data-k="s1.metrics.0.unit"></span></div><div class="idx">01</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 80 C40 70 60 30 100 40 S160 90 200 60 S260 20 300 30" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></svg></div>
+<div class="metric abs" id="m2"><div class="lab" data-k="s1.metrics.1.label"></div><div class="num"><span class="v"></span><span class="unit" data-k="s1.metrics.1.unit"></span></div><div class="idx">02</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 50 C30 90 70 90 110 50 S170 10 210 50 S270 90 300 60" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></svg></div>
+<div class="metric abs" id="m3"><div class="lab" data-k="s1.metrics.2.label"></div><div class="num"><span class="v"></span><span class="unit" data-k="s1.metrics.2.unit"></span></div><div class="idx">03</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 60 C50 55 70 75 120 65 S190 40 230 55 S280 70 300 62" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></svg></div>
+<div class="h1 abs" id="h1" style="top:836px;font-size:70px" data-h="s1.title"></div>
+
+<!-- S2: гигантская цифра -->
+<div class="kicker abs" id="k2" style="left:0;right:0;text-align:center;top:330px" data-k="s2.kicker"></div>
+<div class="giant abs" id="giant" style="top:390px;font-size:430px" data-k="s2.value"></div>
+
+<!-- S3: кольцо было→стало -->
+<div class="kicker abs" id="k3" style="left:0;right:0;text-align:center;top:230px" data-k="s3.kicker"></div>
+<div class="abs ringwrap" id="ring"><svg viewBox="0 0 500 500" width="500" height="500">
+ <circle cx="250" cy="250" r="220" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="22"/>
+ <circle id="arc" cx="250" cy="250" r="220" fill="none" stroke="url(#gr)" stroke-width="22" stroke-linecap="round" transform="rotate(-90 250 250)" stroke-dasharray="1382" stroke-dashoffset="1382"/>
+ <defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#FF8A4C"/><stop offset="1" stop-color="#FF3D1F"/></linearGradient></defs></svg></div>
+<div class="giant abs" id="ringnum" style="top:415px;font-size:300px"></div>
+<div class="abs" id="plus" style="left:0;right:0;top:820px;text-align:center"><span class="pill" data-k="s3.pill"></span></div>
+<div class="h1 abs" id="h3" style="top:900px;text-align:center;font-size:64px" data-h="s3.title"></div>
+
+<!-- S4: перечисление -->
+<div class="kicker abs" id="k4" style="left:48px;top:230px" data-k="s4.kicker"></div>
+<div class="list abs" id="list" style="top:290px">
+ <div class="row" id="r1"><div class="n">01</div><div class="w" data-h="s4.items.0"></div></div>
+ <div class="row" id="r2"><div class="n">02</div><div class="w" data-h="s4.items.1"></div></div>
+ <div class="row" id="r3"><div class="n">03</div><div class="w" data-h="s4.items.2"></div></div>
+</div>
+
+<!-- S5: итог -->
+<div class="h1 abs" id="s5a" style="top:380px;font-size:96px" data-h="s5.0"></div>
+<div class="h1 abs" id="s5b" style="top:540px;font-size:62px;color:var(--mute)" data-h="s5.1"></div>
+<div class="h1 abs" id="s5c" style="top:630px;font-size:62px;color:var(--mute)" data-h="s5.2"></div>
+
+<div class="cap abs" id="cap"></div>
+<div class="grain abs"></div>
+</div>
+<script>
+const W=(window.WORDS||[]);
+const C=window.CFG||{};
+const get=k=>k.split('.').reduce((o,p)=>o==null?o:o[p],C);
+document.querySelectorAll('[data-k]').forEach(e=>e.textContent=get(e.dataset.k)??'');
+document.querySelectorAll('[data-h]').forEach(e=>e.innerHTML=get(e.dataset.h)??'');  // <em>…</em> = акцент
+if(C.accent)document.documentElement.style.setProperty('--acc',C.accent);
+if(C.good)document.documentElement.style.setProperty('--good',C.good);
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const eo=x=>1-Math.pow(1-cl(x),3);                 // easeOutCubic
+const eb=x=>{x=cl(x);const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)}; // easeOutBack
+const ei=x=>{x=cl(x);return x*x*x};
+const p=(t,a,d)=>cl((t-a)/d);                     // прогресс 0..1 на [a,a+d]
+function set(el,o,tx=0,ty=0,s=1,blur=0){el.style.opacity=o;el.style.transform=`translate(${tx}px,${ty}px) scale(${s})`;el.style.filter=blur?`blur(${blur}px)`:'none'}
+// вход/выход элемента: in в момент a, out в момент b
+function life(t,a,b,dIn=.35,dOut=.25){return Math.min(eo(p(t,a,dIn)),1-ei(p(t,b,dOut)))}
+
+// тайминги (сек времени ролика)
+// тайминги в секундах ролика; по умолчанию — пример example-app, в проекте задаются в CFG.t
+const T=Object.assign({start:5.4,accent1:10.96,pill:17.25,m1:5.22,m2:6.80,m3:8.74,all:10.10,s1out:12.25,giant:12.44,s2out:13.7,ring:13.86,change:16.6,s3title:18.4,s3out:20.45,
+ i1:20.68,i2:21.50,i3:22.54,s4out:24.35,f1:24.54,f2:25.68,f3:27.30,end:27.0},C.t||{});
+
+function counter(el,val,t,a){const k=eo(p(t,a,.7));el.textContent=Math.round(val*k)}
+
+window.render=function(t){
+ // фон дышит
+ $('bg').style.transform=`scale(${1.04+0.02*Math.sin(t*.6)}) translateY(${Math.sin(t*.4)*10}px)`;
+ set($('brand'),eo(p(t,T.start,.4))*(1-ei(p(t,T.end-.4,.3))));
+
+ // ---- S1: метрики. Каждая влетает крупно в центр, затем уезжает в стопку
+ const slots=[200,420,640];
+ [['m1',T.m1],['m2',T.m2],['m3',T.m3]].forEach(([id,a],i)=>{
+  const el=$(id), next=[T.m2,T.m3,T.all][i];
+  const enter=eb(p(t,a,.5));
+  const o=Math.min(eo(p(t,a,.25)),1-ei(p(t,T.s1out,.3)));
+  el.style.top=slots[i]+'px';
+  set(el,o,0,(1-enter)*90-ei(p(t,T.s1out,.3))*60,1.06-0.06*enter);
+  const active=t>=a&&t<next;
+  el.style.borderColor=active?'rgba(255,91,46,.75)':'rgba(255,255,255,.08)';
+  el.style.boxShadow=active?'0 0 60px rgba(255,91,46,.25)':'none';
+  el.querySelector('.num').style.color=(t>=next&&t<T.all)?'rgba(244,241,234,.55)':'var(--txt)';
+  counter(el.querySelector('.v'),+get('s1.metrics.'+i+'.value'),t,a);
+  const sp=el.querySelector('.sp');const L=420;sp.style.strokeDasharray=L;sp.style.strokeDashoffset=L*(1-eo(p(t,a+.15,.9)));
+ });
+ set($('k1'),life(t,T.start-.1,T.s1out),0,0);
+ const h1=life(t,T.all,T.s1out);set($('h1'),h1,0,(1-eo(p(t,T.all,.45)))*14);
+ $('h1').querySelector('em').style.color=t>=T.accent1?'var(--acc)':'var(--txt)';
+
+ // ---- S2: гигантская цифра
+ const g=life(t,T.giant-.05,T.s2out,.3,.2);
+ set($('giant'),g,0,0,0.7+0.3*eb(p(t,T.giant-.05,.45)) + 0.04*p(t,T.giant,1.3));
+ set($('k2'),g);
+
+ // ---- S3: кольцо было→стало
+ const s3=life(t,T.ring,T.s3out,.4,.3);
+ set($('ring'),s3,0,0,0.9+0.1*eo(p(t,T.ring,.6)));
+ set($('k3'),s3);
+ $('arc').style.strokeDashoffset=1382*(1-0.78*eo(p(t,T.ring+.2,2.4)));
+ const ringnum=Math.min(eo(p(t,T.ring+.2,.3)),1-ei(p(t,T.s3out,.3)));
+ set($('ringnum'),ringnum,0,0,1+0.08*Math.sin(Math.PI*p(t,T.change,.6)));
+ $('ringnum').style.color=t>=T.change+.5?'var(--txt)':'rgba(244,241,234,.6)';
+ {const f=+get('s3.from'),to=+get('s3.to');$('ringnum').textContent=(get('s3.prefix')||'')+Math.round(f+(to-f)*eo(p(t,T.change,.9)));}
+ set($('plus'),Math.min(eo(p(t,T.pill,.3)),1-ei(p(t,T.s3out,.3))),0,(1-eb(p(t,T.pill,.45)))*40);
+ set($('h3'),Math.min(eo(p(t,T.s3title,.35)),1-ei(p(t,T.s3out,.3))),0,(1-eo(p(t,T.s3title,.4)))*30);
+ 
+
+ // ---- S4: перечисление 01/02/03, активный пункт оранжевый, прошлые гаснут
+ const s4=life(t,T.i1-.15,T.s4out,.3,.3);set($('k4'),s4);set($('list'),s4,0,-ei(p(t,T.s4out,.3))*60);
+ [['r1',T.i1],['r2',T.i2],['r3',T.i3]].forEach(([id,a],i,arr)=>{
+  const el=$(id),nx=arr[i+1]?arr[i+1][1]:99;
+  const e=eb(p(t,a,.4));
+  el.style.opacity=eo(p(t,a,.2));
+  el.style.transform=`translateX(${(1-e)*120}px)`;
+  const active=t>=a&&t<nx;const dim=t>=nx;
+  el.querySelector('.w').style.color=active?'var(--acc)':(dim?'rgba(244,241,234,.38)':'var(--txt)');
+  el.querySelector('.n').style.color=active?'var(--acc)':'var(--mute)';
+ });
+
+ // ---- S5: итог
+ [['s5a',T.f1],['s5b',T.f2],['s5c',T.f3-.6]].forEach(([id,a])=>{
+  set($(id),eo(p(t,a,.3))*(1-ei(p(t,T.end-.25,.25))),0,(1-eb(p(t,a,.45)))*50);
+  if(id!='s5a')$(id).style.color=t>=a?'var(--txt)':'var(--mute)';
+ });
+
+ // ---- субтитры: окно до 3 слов, ключевое слово акцентом
+ const KEY=new RegExp('^('+((C.keys||[]).join('|')||'^$')+')','i');
+ const cur=W.filter(w=>w.s<=t&&t<w.e+.35);
+ let idx=W.findIndex(w=>w.s<=t&&t<(w.n??w.e+.4));
+ const big=(t>=T.all&&t<T.s1out)||(t>=T.giant-.1&&t<T.s2out)||(t>=T.s3title&&t<T.s3out)||t>=T.i1-.15;
+ if(idx<0||big){$('cap').innerHTML='';return}
+ const st=Math.floor(idx/3)*3, grp=W.slice(st,st+3);
+ $('cap').innerHTML=grp.map((w,j)=>{
+  const on=st+j<=idx;const k=KEY.test(w.w)?' k':'';
+  const sc=st+j===idx?1+0.06*(1-eo(p(t,w.s,.18))):1;
+  return `<span class="${k}" style="opacity:${on?1:.28};transform:scale(${sc})">${w.w}</span>`}).join(' ');
+};
+</script></body></html>

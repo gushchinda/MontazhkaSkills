@@ -1,0 +1,66 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Оверлей перечисления для UGC (тег [ENUM] в сценарии). Фон прозрачный — рендерить с --alpha.
+     window.CFG = {capEnd:сек (после — без субтитров), keys:["brand",...] (акцент в субтитрах), accent:"#hex", good:"#hex",
+                   blocks:[{kicker:"...", tone:"neutral|bad|good", out:сек, items:[{t:"VO2 max", s:сек}]}],
+                   bigs:[{t:"42", s:сек, out:сек, sub:"подпись", top:px}]}  — [BIG]
+                   DELTA: {from:8, to:3, prefix:"", s, ds:сек начала отсчёта, out, sub}
+     window.WORDS — слова озвучки: субтитры по словам, скрываются, пока на экране плашки или BIG.
+     Плашки появляются по слову диктора, стопкой в нижней трети на месте субтитров (субтитры в эти секунды скрыты), лицо остаётся открытым. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800;900&family=Inter:wght@600;700&display=block" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:720px;height:1280px;overflow:hidden;background:transparent;font-family:'Inter Tight',sans-serif;-webkit-font-smoothing:antialiased}
+.blk{position:absolute;left:40px;right:40px;bottom:270px}
+.kick{display:inline-block;font:700 22px/1 Inter;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:rgba(11,14,19,.72);padding:10px 14px;border-radius:10px;margin-bottom:12px;backdrop-filter:blur(8px)}
+.it{display:flex;align-items:center;gap:18px;margin-bottom:12px;padding:18px 24px;border-radius:24px;background:rgba(11,14,19,.78);backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.12);box-shadow:0 12px 40px rgba(0,0,0,.35);width:max-content;max-width:100%}
+.it .n{font:800 26px/1 'Inter Tight';color:rgba(255,255,255,.5);min-width:40px}
+.it .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font:900 26px/1 'Inter Tight';color:#140703}
+.it .w{font:900 44px/1.02 'Inter Tight';letter-spacing:-.03em;color:#F4F1EA}
+.neutral .ic{background:var(--brand)}.bad .ic{background:#FF4D4D;color:#fff}.good .ic{background:var(--goodc)}
+.it.on{border-color:var(--acc)}
+.neutral{--acc:var(--brand)}.bad{--acc:#FF4D4D}.good{--acc:var(--goodc)}
+.big{position:absolute;left:0;right:0;top:640px;text-align:center}
+.cap{position:absolute;left:40px;right:40px;bottom:270px;text-align:center;font:900 52px/1.1 'Inter Tight';letter-spacing:-.02em;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35),0 6px 28px rgba(0,0,0,.55)}
+.cap span{display:inline-block;margin:0 .1em}.cap .k{color:var(--brand)}
+.big .v{display:inline-block;font:900 230px/0.9 'Inter Tight';letter-spacing:-.06em;color:var(--brand);text-shadow:0 18px 60px rgba(0,0,0,.45);font-variant-numeric:tabular-nums}
+.big .sub{display:block;margin-top:6px;font:800 40px/1 'Inter Tight';color:#fff;text-shadow:0 6px 24px rgba(0,0,0,.6)}
+</style></head><body><div id="root"></div>
+<script>
+const C=window.CFG||{blocks:[],bigs:[]};
+const ACC=C.accent||'#FF5B2E',GOOD=C.good||'#3DDC97';
+document.documentElement.style.setProperty('--brand',ACC);document.documentElement.style.setProperty('--goodc',GOOD);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),p=(t,a,d)=>cl((t-a)/d);
+const eo=x=>1-Math.pow(1-cl(x),3),ei=x=>{x=cl(x);return x*x*x};
+const eb=x=>{x=cl(x);const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const root=document.getElementById('root');const W=window.WORDS||[];
+// группы субтитров: до 3 слов, разрыв после конца фразы
+const G=[];let g=[];W.forEach((w,i)=>{g.push(i);if(g.length==3||/[.?!]$/.test(w.w)){G.push(g);g=[]}});if(g.length)G.push(g);
+const cap=document.createElement('div');cap.className='cap';root.appendChild(cap);
+const ICON={neutral:'',bad:'✕',good:'✓'};
+C.blocks.forEach((b,bi)=>{const d=document.createElement('div');d.className='blk '+(b.tone||'neutral');d.id='b'+bi;
+ d.innerHTML=(b.kicker?`<div class="kick">${b.kicker}</div>`:'')+b.items.map((it,i)=>`<div class="it" id="b${bi}i${i}"><div class="${ICON[b.tone]?'ic':'n'}">${ICON[b.tone]||String(i+1).padStart(2,'0')}</div><div class="w">${it.t}</div></div>`).join('');root.appendChild(d)});
+(C.bigs||[]).forEach((g,gi)=>{const d=document.createElement('div');d.className='big';d.id='g'+gi;if(g.top)d.style.top=g.top+'px';d.innerHTML=`<span class="v">${g.t}</span>${g.sub?`<span class="sub">${g.sub}</span>`:''}`;root.appendChild(d)});
+window.render=function(t){
+ C.blocks.forEach((b,bi)=>{const d=document.getElementById('b'+bi);const s0=b.items[0].s-.12;
+  const o=Math.min(eo(p(t,s0,.2)),1-ei(p(t,b.out,.25)));d.style.opacity=o;d.style.transform=`translateY(${-ei(p(t,b.out,.25))*40}px)`;
+  const k=d.querySelector('.kick');if(k)k.style.transform=`translateX(${(1-eo(p(t,s0,.3)))*-30}px)`;
+  b.items.forEach((it,i)=>{const el=document.getElementById(`b${bi}i${i}`);const e=eb(p(t,it.s-.06,.4));
+   el.style.opacity=eo(p(t,it.s-.06,.18));el.style.transform=`translateX(${(1-e)*-80}px) scale(${.9+.1*e})`;
+   const nx=b.items[i+1]?b.items[i+1].s:b.out;el.classList.toggle('on',t>=it.s&&t<nx)})});
+ (C.bigs||[]).forEach((g,gi)=>{const d=document.getElementById('g'+gi);
+  d.style.opacity=Math.min(eo(p(t,g.s,.2)),1-ei(p(t,g.out,.2)));
+  d.style.transform=`translateY(${(1-eb(p(t,g.s,.45)))*120}px) scale(${.6+.4*eb(p(t,g.s,.45))})`;
+  if(g.from!==undefined){const k=eo(p(t,g.ds,.8));const v=g.from+(g.to-g.from)*k;const el=d.querySelector('.v');
+   el.textContent=(g.prefix||'')+v.toFixed(0);el.style.color=k>.5?GOOD:ACC;
+   el.style.transform=`scale(${1+.12*Math.sin(Math.PI*p(t,g.ds,.5))})`}});
+ // субтитры: группы по 3 слова; скрыты, пока на экране плашки/BIG (одно текстовое поле на кадр)
+ const busy=C.blocks.some(b=>t>=b.items[0].s-.12&&t<b.out)||(C.bigs||[]).some(g=>t>=g.s-.05&&t<g.out+.3)||(C.capEnd&&t>=C.capEnd);
+ const idx=W.findIndex(w=>w.s<=t&&t<w.n);
+ if(busy||idx<0){cap.innerHTML='';return}
+ const KEY=new RegExp('^('+(C.keys||[]).join('|')+')','i');const grp=G.find(x=>x.includes(idx)),st=grp[0];
+ cap.innerHTML=grp.map(i=>W[i]).map((w,j)=>{const on=st+j<=idx;const k=(C.keys||[]).length&&KEY.test(w.w)?' k':'';
+  const sc=st+j===idx?1+.08*(1-eo(p(t,w.s,.15))):1;
+  return `<span class="${k}" style="opacity:${on?1:.0};transform:scale(${sc})">${w.w}</span>`}).join(' ');
+};
+</script></body></html>
