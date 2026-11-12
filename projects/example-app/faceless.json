@@ -1,0 +1,15 @@
+{
+ "brand": "Example App", "accent": "#FF5B2E", "good": "#3DDC97",
+ "keys": ["cardio","variability","resting","three","57","example-app","biological","first","movement","nutrition","sleep","recovery","same","plan"],
+ "s1": {"kicker": "Your watch, every day", "title": "Your watch tracks <em>all three.</em>",
+        "metrics": [{"label": "Cardio fitness · VO₂ max", "value": 31, "unit": "ml/kg/min"},
+                    {"label": "Heart rate variability", "value": 34, "unit": "ms"},
+                    {"label": "Resting heart rate", "value": 64, "unit": "bpm"}]},
+ "s2": {"kicker": "Calendar age", "value": "57"},
+ "s3": {"kicker": "Example App age", "from": 57, "to": 61, "prefix": "", "pill": "+4 years older", "title": "What to change <em>first</em>"},
+ "s4": {"kicker": "Your plan", "items": ["Movement", "Nutrition", "Sleep &amp;<br>recovery"]},
+ "s5": ["Same watch.", "<em>+</em> your biological age", "<em>+</em> a personal plan"],
+ "t": {"start": 5.4, "end": 27.0, "m1": 5.22, "m2": 6.80, "m3": 8.74, "all": 10.10, "accent1": 10.96, "s1out": 12.25,
+       "giant": 12.44, "s2out": 13.7, "ring": 13.86, "change": 16.6, "pill": 17.25, "s3title": 18.4, "s3out": 20.45,
+       "i1": 20.68, "i2": 21.50, "i3": 22.54, "s4out": 24.35, "f1": 24.54, "f2": 25.68, "f3": 26.7}
+}

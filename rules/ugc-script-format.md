@@ -6,20 +6,18 @@
 
 Теги графики:
 - `[ENUM: a | b | c]` — перечисление: плашки по слову поверх кадра (опция A/B из `faceless-graphics.md`), субтитры в эти секунды скрыть;
-- `[BIG: +5]` — крупная цифра «вылетает» из экрана телефона (опция C);
-- `[DELTA: +5 → +2]` — цифра тикает от старого значения к новому, цвет меняется с акцента на зелёный;
+- `[BIG: 42]` — крупная цифра «вылетает» из экрана телефона (опция C);
+- `[DELTA: 8 → 3]` — цифра тикает от старого значения к новому, цвет меняется с акцента на зелёный;
 - `[KEY: слово]` — слово в субтитрах акцентным цветом.
 
-## Пример (Example App × Garmin, мужчина 58)
+## Пример (шаблон)
 
 ```
-0–4    TALK   «I've worn this for six years. Love it.»                          [KEY: Garmin]
-4–10   TALK   «Body Battery, VO2 max, every number you want.                    [ENUM: Body Battery | VO2 max | every number]
-              But I'm 58 and I still couldn't tell you why I'm wiped out by 4 pm.» [KEY: 4 pm]
-10–15  PHONE  «It took my Garmin data and showed me: plus five years on my biological age.» [BIG: +5]
-15–16  TALK   «That hit.»
-16–20  TALK   «Then it told me what was doing it: not enough protein,           [ENUM: ✕ Not enough protein | ✕ No strength work | ✕ Late dinners]
-              no strength work, late dinners.»
-20–26  PHONE  «Same Garmin. Eight weeks later I'm down to plus two.»            [DELTA: +5 → +2]
-26–28  END    «Example App.»
+0–4    TALK   «<хук: кто я и что у меня есть>»                                [KEY: <продукт/предмет>]
+4–10   TALK   «<пункт 1>, <пункт 2>, <пункт 3>. <боль>»                       [ENUM: <пункт 1> | <пункт 2> | <пункт 3>]
+10–15  PHONE  «<что показало приложение>»                                    [BIG: <ключевая цифра>]
+15–20  TALK   «<почему так>: <причина 1>, <причина 2>, <причина 3>.»          [ENUM: ✕ <причина 1> | ✕ <причина 2> | ✕ <причина 3>]
+20–26  PHONE  «<результат через N недель>»                                    [DELTA: <было> → <стало>]
+26–28  END    «<бренд>.»
 ```
+Заполненный пример: `projects/example-app/script.md`.

@@ -31,7 +31,7 @@ RESTAGE = ("Recreate the FIRST image as closely as possible, but with a differen
            "noise, slight motion blur and uneven light. Remove any caption or subtitle text burned into the frame "
            "(text on a phone screen stays exactly as it is). ")
 RESTAGE_NOFACE = ("Recreate this image as closely as possible with a different person's hands and arms (different skin, "
-                  "different hair on the arm, slightly different watch strap). Keep EXACTLY the same lighting, imperfect "
+                  "different hair on the arm, slightly different accessories). Keep EXACTLY the same lighting, imperfect "
                   "natural light, setting, location, background, framing and composition, and keep the phone screen "
                   "content exactly as it is and legible. Do NOT enhance or beautify: keep it looking shot on a phone. "
                   "Remove any caption or subtitle text burned into the frame that is not on the phone screen. ")

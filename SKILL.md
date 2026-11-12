@@ -5,16 +5,19 @@ description: Use when the editing team (Монтажка) generates ad videos �
 
 # Монтажка: правила генерации креативов
 
-Правила живут в `rules/`, примеры в `bad_examples/` и `good_examples/`. Перед любой генерацией
+Скилл универсальный: правила (`rules/`), шаблоны (`templates/`), скрипты (`scripts/`) и промпты (`prompts/`)
+не знают про конкретный продукт. Всё продуктовое (бренд, цвета, персона, предмет в кадре, экраны приложения,
+сценарий, тайминги, монтаж) лежит в `projects/<проект>/`. Новый продукт = новая папка по образцу `projects/example-app/`.
+Примеры роликов — в `bad_examples/` и `good_examples/`. Перед любой генерацией
 прочитай нужное правило целиком. Правку правил вносим PR-ом в этот репозиторий, вместе с примером
 «было/стало».
 
 | Задача | Правило | Инструменты |
 |---|---|---|
-| Цифры, метрики, список шагов без лица | `rules/faceless-graphics.md` (опции A/B/C) | `templates/faceless_kinetic/`, `scripts/render_html.py` |
-| Говорящая голова (UGC) из реального фото — основной способ | `rules/ugc-video-from-photo.md` + `rules/ugc-realistic-face.md` | `scripts/ugc_from_photo.py`, `prompts/`, `refs/` |
+| Цифры, метрики, список шагов без лица | `rules/faceless-graphics.md` (опции A/B/C) | `templates/faceless_kinetic/` + `projects/<проект>/faceless.json`, `scripts/render_html.py` |
+| Говорящая голова (UGC) из реального фото — основной способ | `rules/ugc-video-from-photo.md` + `rules/ugc-realistic-face.md` | `scripts/ugc_from_photo.py` + `projects/<проект>/ugc.json`, `prompts/` |
 | Требования к лицу и свету | `rules/ugc-realistic-face.md` | `faces/`, `scripts/ugc_keyframe.py`, Kling на fal |
-| Перечисления внутри UGC | `rules/faceless-graphics.md` → «Перечисления внутри UGC» | `templates/enum_overlay/` |
+| Перечисления внутри UGC | `rules/faceless-graphics.md` → «Перечисления внутри UGC» | `templates/enum_overlay/` + `projects/<проект>/overlay.json` |
 | Сценарий | `rules/ugc-script-format.md` (теги `[ENUM]`, `[BIG]`, `[DELTA]`, `[KEY]`) | — |
 
 ## Порядок работы
@@ -25,3 +28,14 @@ description: Use when the editing team (Монтажка) generates ad videos �
 
 ## Ключи
 `FAL_KEY` в окружении (fal.ai: nano-banana-pro для кейфреймов, Kling для видео). В репозиторий ключи не коммитим.
+
+## Новый проект
+```
+projects/<проект>/
+  faceless.json     # бренд, accent/good, тексты и цифры сцен, тайминги (templates/faceless_kinetic)
+  ugc.json          # persona, prop, gesture_a/b, screens, talk, edit_template (scripts/ugc_from_photo.py)
+  overlay.json      # плашки ENUM/BIG/DELTA и keys субтитров (templates/enum_overlay)
+  ugc_edit.json     # порядок клипов, блюр, эндкарта (scripts/ugc_build.py)
+  script.md         # сценарий в формате rules/ugc-script-format.md
+  screens/          # скрины приложения для кадров с телефоном
+```
