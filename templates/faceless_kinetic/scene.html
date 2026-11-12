@@ -48,7 +48,7 @@ html,body{width:720px;height:1280px;overflow:hidden;background:var(--ink);color:
 <div class="metric abs" id="m1"><div class="lab" data-k="s1.metrics.0.label"></div><div class="num"><span class="v"></span><span class="unit" data-k="s1.metrics.0.unit"></span></div><div class="idx">01</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 80 C40 70 60 30 100 40 S160 90 200 60 S260 20 300 30" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></svg></div>
 <div class="metric abs" id="m2"><div class="lab" data-k="s1.metrics.1.label"></div><div class="num"><span class="v"></span><span class="unit" data-k="s1.metrics.1.unit"></span></div><div class="idx">02</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 50 C30 90 70 90 110 50 S170 10 210 50 S270 90 300 60" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></svg></div>
 <div class="metric abs" id="m3"><div class="lab" data-k="s1.metrics.2.label"></div><div class="num"><span class="v"></span><span class="unit" data-k="s1.metrics.2.unit"></span></div><div class="idx">03</div><svg viewBox="0 0 300 110"><path class="sp" d="M0 60 C50 55 70 75 120 65 S190 40 230 55 S280 70 300 62" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round"/></svg></div>
-<div class="h1 abs" id="h1" style="top:850px;font-size:70px" data-h="s1.title"></div>
+<div class="h1 abs" id="h1" style="top:836px;font-size:70px" data-h="s1.title"></div>
 
 <!-- S2: гигантская цифра -->
 <div class="kicker abs" id="k2" style="left:0;right:0;text-align:center;top:330px" data-k="s2.kicker"></div>
@@ -126,7 +126,7 @@ window.render=function(t){
   const sp=el.querySelector('.sp');const L=420;sp.style.strokeDasharray=L;sp.style.strokeDashoffset=L*(1-eo(p(t,a+.15,.9)));
  });
  set($('k1'),life(t,T.start-.1,T.s1out),0,0);
- const h1=life(t,T.all,T.s1out);set($('h1'),h1,0,(1-eo(p(t,T.all,.45)))*40);
+ const h1=life(t,T.all,T.s1out);set($('h1'),h1,0,(1-eo(p(t,T.all,.45)))*14);
  $('h1').querySelector('em').style.color=t>=T.accent1?'var(--acc)':'var(--txt)';
 
  // ---- S2: гигантская цифра
