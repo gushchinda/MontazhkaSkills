@@ -20,6 +20,7 @@ description: Use when the editing team (Монтажка) generates ad videos �
 | Перечисления внутри UGC | `rules/faceless-graphics.md` → «Перечисления внутри UGC» | `templates/enum_overlay/` + `projects/<проект>/overlay.json` |
 | Дизайн каждого экрана графики (бриф, превью, линтер) | `rules/design-pass.md` | `scripts/design_lint.py`, `scripts/text_guard.py` |
 | Эндкарта (иконка из App Store, шрифты, без обводки) | `rules/end-card.md` | `templates/end_card/` + `projects/<проект>/brand/app_icon_1024.png` |
+| Финальная проверка склеек | `rules/ugc-video-from-photo.md` → «Финальная проверка склеек» | `scripts/cut_check.py` |
 | Проверка на нейрослоп после генерации | `rules/ugc-video-from-photo.md`, шаг 10 | `scripts/slop_check.py` |
 | Сценарий | `rules/ugc-script-format.md` (теги `[ENUM]`, `[BIG]`, `[DELTA]`, `[KEY]`) | — |
 
@@ -38,7 +39,8 @@ description: Use when the editing team (Монтажка) generates ad videos �
    рендер из HTML (`window.render(t)`) в 1440×2560/30 fps, поверх видео — с альфой.
 4. Каждый сгенерированный клип — `scripts/slop_check.py` и просмотр листов глазами (нейрослоп), до сборки.
 5. Эндкарта — по `rules/end-card.md` (оригинальная иконка из стора, Inter Tight/Inter, без обводок).
-6. Перед сдачей — лист кадров (`ffmpeg -vf fps=1,tile=6x5`) и проверка по чек-листам правил.
+6. Перед сдачей — `scripts/cut_check.py` (склейки, вспышки, стоп-кадры, щелчки), лист кадров (`ffmpeg -vf fps=1,tile=6x5`)
+   и проверка по чек-листам правил. Склейки — по номеру кадра, не по секундам.
 
 ## Ключи
 `FAL_KEY` в окружении (fal.ai: nano-banana-pro для кейфреймов, Kling для видео). В репозиторий ключи не коммитим.
