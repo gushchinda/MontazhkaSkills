@@ -16,7 +16,10 @@ def _dl(url, out):
     return out
 
 AVATAR_PROMPT = ("Natural UGC selfie video, he talks to the camera like to a friend, small natural head movements, "
-                 "blinks, slight handheld camera shake, realistic skin, no exaggerated mouth movement.")
+                 "blinks, slight handheld camera shake, realistic skin, no exaggerated mouth movement. "
+                 # анатомия селфи: одна рука держит телефон за кадром — новых рук и пальцев быть не может (garmin12, 12.11.2026)
+                 "One hand holds the phone out of frame: only the arms already visible in the image may appear, "
+                 "no new hand, arm or fingers ever enter the frame from the edges.")
 I2V_NEG = "cgi, 3d render, plastic skin, morphing hands, extra fingers, text, watermark, blur"
 
 
