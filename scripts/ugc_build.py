@@ -9,6 +9,7 @@ edit.json:
   "clips": [{"src": "talk1.mp4", "in": 0, "dur": 10.85}, ...]   # подряд, без зазоров
 }
 Клипы приводятся к 1080×1920 / 30 fps (cover-кроп), звук клипов отбрасывается.
+У клипа можно задать "blur": 1.0 — лёгкий gblur (правило: лёгкий блюр на сгенерированных кадрах).
 """
 import json, subprocess, sys
 
@@ -17,7 +18,8 @@ args, parts = [], []
 for i, c in enumerate(e["clips"]):
     args += ["-ss", str(c.get("in", 0)), "-t", str(c["dur"]), "-i", c["src"]]
     parts.append(f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-                 f"fps=30,setsar=1,trim=duration={c['dur']},setpts=PTS-STARTPTS[v{i}]")
+                 f"fps=30,setsar=1,trim=duration={c['dur']},setpts=PTS-STARTPTS"
+                 + (f",gblur=sigma={c['blur']}" if c.get('blur') else "") + f"[v{i}]")
 n = len(e["clips"])
 args += ["-i", e["overlay"], "-i", e["audio"]]
 fc = ";".join(parts) + ";" + "".join(f"[v{i}]" for i in range(n)) + f"concat=n={n}:v=1[base];" \
