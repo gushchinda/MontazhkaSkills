@@ -3,25 +3,25 @@
  "overlay": "work/ugc/overlay.mov",
  "clips": [
   {
-   "src": "work/ugc2/talk1.mp4",
+   "src": "talk1.mp4",
    "in": 0,
    "dur": 10.85,
    "blur": 1.0
   },
   {
-   "src": "work/ugc2/phone1.mp4",
+   "src": "phone1.mp4",
    "in": 0,
    "dur": 4.75,
    "blur": 1.0
   },
   {
-   "src": "work/ugc2/talk2.mp4",
+   "src": "talk2.mp4",
    "in": 0,
    "dur": 6.1,
    "blur": 1.0
   },
   {
-   "src": "work/ugc2/phone2.mp4",
+   "src": "phone2.mp4",
    "in": 0.4,
    "dur": 4.6,
    "blur": 1.0

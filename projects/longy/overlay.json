@@ -1,0 +1,76 @@
+{
+ "capEnd": 25.55,
+ "keys": [
+  "garmin",
+  "love",
+  "58",
+  "4",
+  "longy",
+  "hit",
+  "same",
+  "eight",
+  "two"
+ ],
+ "blocks": [
+  {
+   "kicker": "Every number",
+   "tone": "neutral",
+   "out": 6.65,
+   "items": [
+    {
+     "t": "Body Battery",
+     "s": 3.28
+    },
+    {
+     "t": "VO2 max",
+     "s": 4.28
+    },
+    {
+     "t": "Every number",
+     "s": 5.36
+    }
+   ]
+  },
+  {
+   "kicker": "What was doing it",
+   "tone": "bad",
+   "out": 21.75,
+   "items": [
+    {
+     "t": "Not enough protein",
+     "s": 18.6
+    },
+    {
+     "t": "No strength work",
+     "s": 19.78
+    },
+    {
+     "t": "Late dinners",
+     "s": 20.9
+    }
+   ]
+  }
+ ],
+ "bigs": [
+  {
+   "t": "+5",
+   "s": 13.2,
+   "out": 15.25,
+   "sub": "years on my biological age",
+   "top": 780
+  },
+  {
+   "t": "+5",
+   "from": 5,
+   "to": 2,
+   "prefix": "+",
+   "s": 24.2,
+   "ds": 24.66,
+   "out": 25.55,
+   "sub": "8 weeks later",
+   "top": 780
+  }
+ ],
+ "accent": "#FF5B2E",
+ "good": "#3DDC97"
+}

@@ -1,0 +1,10 @@
+{
+ "persona": "He is a handsome, attractive white (Caucasian) man around 55-58 with a neat, well-groomed short haircut (tidy side part, salt-and-pepper hair), a neatly trimmed grey beard, a fit build, a warm trustworthy look, real wrinkles and skin texture.",
+ "prop": "the black Garmin sports watch on his left wrist",
+ "gesture_a": "He raises his left forearm into the lower part of the frame, showing a black Garmin sports watch on his wrist toward the camera, mouth slightly open as if talking",
+ "gesture_b": "his arms are lowered out of the frame; he looks into the camera with a serious, slightly frustrated expression, mouth slightly open as if talking",
+ "avatar_prompts": ["Selfie video, he shows his Garmin watch to the camera, then keeps talking.", "Selfie video."],
+ "screens": ["projects/longy/screens/plus5.png", "projects/longy/screens/plus2.png"],
+ "talk": ["work/ugc/T1.wav", "work/ugc/T2.wav"],
+ "edit_template": "projects/longy/ugc_edit.json"
+}
