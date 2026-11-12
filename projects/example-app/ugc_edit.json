@@ -27,8 +27,8 @@
    "blur": 1.0
   },
   {
-   "src": "bad_examples/02_example_ugc.mp4",
-   "in": 26.4,
+   "src": "endcard.mp4",
+   "in": 0,
    "dur": 2.4
   }
  ]
