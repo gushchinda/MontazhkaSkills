@@ -18,7 +18,15 @@ OK_FONTS = {'Inter Tight', 'Inter', 'Manrope', 'Space Grotesk'}
 ap = argparse.ArgumentParser()
 ap.add_argument('html'); ap.add_argument('words'); ap.add_argument('t0', type=float); ap.add_argument('t1', type=float)
 ap.add_argument('--cfg'); ap.add_argument('--fps', type=float, default=5); ap.add_argument('--width', type=int, default=1080)
+ap.add_argument('--no-cache', action='store_true', help='не брать результат из кеша')
 a = ap.parse_args()
+# кеш: успешный прогон для того же шаблона+конфига+слов+отрезка не повторяем (~60 c экономии на ролик)
+import hashlib as _h, os as _os
+_key = _h.sha256(b''.join(pathlib.Path(x).read_bytes() for x in [a.html, a.words, a.cfg] if x and x != '-' and pathlib.Path(x).exists())
+                 + f'{a.t0}|{a.t1}|{a.fps}|{a.width}'.encode()).hexdigest()
+_cache = pathlib.Path(_os.environ.get('MONTAZHKA_CACHE', pathlib.Path.home() / '.cache' / 'montazhka')) / 'design_lint' / _key
+if not a.no_cache and _cache.exists():
+    print(f'итог: ошибок 0 (кеш {_key[:10]}: шаблон, конфиг и слова не менялись)'); sys.exit(0)
 K = a.width / 720                        # css px → px кадра
 TOP, BOTTOM, H = 220 / K * (a.width / 1080), 380 / K * (a.width / 1080), 1280
 
@@ -91,4 +99,6 @@ def show(d, title):
         print(f"{title} {k:6} {msg}  [{ts[0]}…{ts[-1]} c, кадров {len(ts)}]")
 show(errs, 'ERROR'); show(warns, 'WARN ')
 print(f"итог: ошибок {len(errs)}, предупреждений {len(warns)}")
+if not errs:
+    _cache.parent.mkdir(parents=True, exist_ok=True); _cache.write_text('ok')
 sys.exit(1 if errs else 0)

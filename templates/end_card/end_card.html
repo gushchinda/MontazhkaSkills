@@ -62,17 +62,17 @@ html,body{width:720px;height:1280px;overflow:hidden;-webkit-font-smoothing:antia
 .product #cta{background:var(--acc);color:#fff;box-shadow:0 18px 44px rgba(234,78,28,.35)}
 .hero #icon,.product #icon{box-shadow:0 22px 50px rgba(60,20,5,.28),0 4px 10px rgba(60,20,5,.16)}
 #scrim{position:absolute;left:0;right:0;top:0;height:820px;display:none}
-.photo.hero #scrim{display:block;height:640px;background:linear-gradient(180deg,rgba(10,8,7,.92) 0%,rgba(10,8,7,.88) 70%,rgba(10,8,7,0) 100%)}
-.photo.hero{background:#0E0B09}
-#bgb{position:absolute;inset:-12%;background-size:cover;background-position:center;display:none;filter:blur(36px) brightness(.62) saturate(1.05)}
-.photo.hero #bgb{display:block}
-.photo.hero #bg{-webkit-mask-image:radial-gradient(ellipse 40% 33% at 50% 50%,#000 28%,transparent 100%);mask-image:radial-gradient(ellipse 40% 33% at 50% 50%,#000 28%,transparent 100%)}
+.photo.hero{background:radial-gradient(90% 55% at 50% 72%,#3A170B 0%,#140C09 55%,#0B0807 100%)}
+.photo.hero #bg,.photo.hero #bgb,.photo.hero #scrim{display:none}
+#pcard{display:none;left:50%;border-radius:30px;overflow:hidden;background-size:cover;background-position:center;
+  box-shadow:0 26px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06)}
+.photo.hero #pcard{display:block}
 .photo.hero #head{color:#fff}.photo.hero #sub{color:rgba(255,255,255,.88)}
 .photo.hero .chip{background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(12px);box-shadow:none}
 .photo.hero #glow{display:none}
 </style></head>
 <body><div id="root">
-<div id="bgb"></div><div id="bg"></div><div id="scrim"></div><div id="glow"></div><div id="grain"></div>
+<div id="bgb"></div><div id="bg"></div><div id="scrim"></div><div class="abs" id="pcard"></div><div id="glow"></div><div id="grain"></div>
 <div class="abs" id="icon"><img id="ico"></div>
 <div class="abs" id="phone"><div class="scr"><img id="scr"></div><div class="isl"></div></div>
 <div class="abs" id="head"></div><div class="abs" id="sub"></div>
@@ -83,11 +83,15 @@ html,body{width:720px;height:1280px;overflow:hidden;-webkit-font-smoothing:antia
 <script>
 const C=window.CFG||{};const V=C.variant||'hero';const $=id=>document.getElementById(id);
 const root=$('root');root.className=V+(C.bg&&V!=='product'?' photo':'');root.style.setProperty('--acc',C.accent||'#EA4E1C');
-if(C.bg){$('bg').style.backgroundImage=`url("${C.bg}")`;$('bgb').style.backgroundImage=`url("${C.bg}")`}else $('bg').style.display='none';
+if(C.bg){$('bg').style.backgroundImage=`url("${C.bg}")`;$('pcard').style.backgroundImage=`url("${C.bg}")`;
+  $('pcard').style.backgroundPosition=`50% ${(C.prodPos??50)}%`;
+  // prodFit: высота кадра в % от карточки (178 ≈ cover для 9:16; меньше — продукт вписывается целиком, поля — цветом prodBg)
+  if(C.prodFit){$('pcard').style.backgroundSize=`auto ${C.prodFit}%`;$('pcard').style.backgroundRepeat='no-repeat'}
+  if(C.prodBg)$('pcard').style.backgroundImage+=`,${C.prodBg.includes('gradient')?C.prodBg:`linear-gradient(${C.prodBg},${C.prodBg})`}`}else $('bg').style.display='none';
 // продуктовая эндкарта: продукт уходит вниз, в свободную зону под кнопкой/между плашками и кнопкой (не под текст)
 const PHOTO=!!(C.bg&&V!=='product');
 // текст появляется только после растворения кадра ролика (иначе двойная экспозиция)
-const E0=C.from?.34:0;
+const E0=C.from?(PHOTO?.5:.34):0;   // продуктовая: кадр ролика сначала уходит в тёмный фон (0.3 c), потом продукт и текст
 if(C.from)$('from').style.backgroundImage=`url("${C.from}")`;else $('from').style.display='none';
 $('ico').src=C.icon;$('head').innerHTML=C.headline||'';$('sub').textContent=C.sub||'';$('ctat').textContent=C.cta||'';
 if(C.screen)$('scr').src=C.screen;
@@ -99,7 +103,9 @@ $('meta').innerHTML=chips.join('');
 const L={hero:{icon:[180,165],head:380,sub:540,meta:620,cta:860,phone:null},
          brand:{icon:[170,180],head:400,sub:560,meta:650,cta:850,phone:null},
          product:{icon:[96,160],head:160,sub:null,meta:null,cta:905,phone:300}}[V];
-if(PHOTO){L.icon=[150,150];L.head=322;L.sub=468;L.meta=520;L.cta=905;}   // зоны: текст 150–600, продукт 620–890, кнопка 905–1017
+// зоны продуктовой эндкарты (css 720×1280): текст 140–560, карточка продукта 592–872 (зазор ≥ 32 css = 48 px до плашки и кнопки), кнопка 905–1017
+if(PHOTO){L.icon=[140,140];L.head=298;L.sub=442;L.meta=496;L.cta=905;
+  const pc=$('pcard'),PS=C.prodSize??268;pc.style.width=pc.style.height=PS+'px';pc.style.marginLeft=-PS/2+'px';pc.style.top=(592+(280-PS)/2)+'px';}
 const ic=$('icon');ic.style.width=ic.style.height=L.icon[0]+'px';ic.style.marginLeft=-L.icon[0]/2+'px';ic.style.top=L.icon[1]+'px';
 if(V==='product'){ic.style.left='56px';ic.style.marginLeft='0';$('head').style.left='170px';$('head').style.right='40px';$('head').style.textAlign='left';
   $('head').style.font="900 46px/1.02 'Inter Tight'";$('sub').style.display='none';$('meta').style.display='none';}
@@ -111,9 +117,11 @@ const eo=x=>1-Math.pow(1-cl(x),3);
 const spring=x=>{x=cl(x);return 1-Math.exp(-6*x)*Math.cos(9*x)};   // пружина с лёгким перелётом
 function inn(el,t,a,dy=36,s0=.94){const k=spring(p(t,a,.7));el.style.opacity=eo(p(t,a,.3));el.style.transform=`translateY(${(1-k)*dy}px) scale(${s0+(1-s0)*k})`}
 window.render=function(T){const t=T-(C.t0||0),D=C.dur||3;
- {const x=p(t,0,.4);$('from').style.opacity=1-x*x*(3-2*x);}          // мягкий переход: smoothstep 0.4 c (без скачка, который cut_check примет за склейку)
+ {const x=p(t,0,PHOTO?.32:.4);$('from').style.opacity=1-x*x*(3-2*x);}          // мягкий переход: smoothstep 0.4 c (без скачка, который cut_check примет за склейку)
  $('bg').style.transform=PHOTO?`translateY(${(C.prodY??735)-640}px) scale(${(C.prodScale??.44)*(1+.04*p(t,0,D))})`:`scale(${1.02+.03*p(t,0,D)})`;
  $('glow').style.transform=`translate(${Math.sin(t*.9)*30}px,${Math.cos(t*.7)*24}px)`;   // фон живой, без статики
+ if(PHOTO){const pc=$('pcard'),kp=spring(p(t,E0-.05,.8));pc.style.opacity=eo(p(t,E0-.05,.3));
+   pc.style.transform=`translateY(${(1-kp)*40+Math.sin(t*1.5)*2}px) scale(${.92+.08*kp})`;}
  const k=spring(p(t,E0+.1,.8));ic.style.opacity=eo(p(t,E0+.1,.3));
  ic.style.transform=`translateY(${(1-k)*50 + Math.sin(t*2.2)*4}px) scale(${.7+.3*k})`;
  inn($('head'),t,E0+.25);inn($('sub'),t,E0+.38);inn($('meta'),t,E0+.48);

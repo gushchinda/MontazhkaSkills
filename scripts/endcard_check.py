@@ -109,6 +109,18 @@ with sync_playwright() as pw:
                 dens = float((gm > 2.5).mean())   # доля пикселей с заметным перепадом яркости (контуры предмета, линии)
                 if DEBUG: print(f'  debug busy {sel}: {dens:.3f}')
                 if dens > BUSY: errs.append(f'BUSY     {sel}: под текстом пёстрый фон или продукт (контуры {dens:.1%}) — затемнить/размыть фон, сдвинуть продукт')
+    # 3б) продукт в своей зоне: зазор ≥ 48 px (при 1080) до плашек и до кнопки, без пересечения с текстом
+    pg.evaluate(f"render({tf})")
+    box = lambda sel: pg.evaluate("(s)=>{const e=document.querySelector(s);if(!e||getComputedStyle(e).display==='none')return null;const r=e.getBoundingClientRect();return [r.left,r.top,r.right,r.bottom]}", sel)
+    pc = box('#pcard') or box('#phone')
+    if pc:
+        GAP = 48 / K
+        for sel in ['#head', '#sub', '#meta', '#cta']:
+            o = box(sel)
+            if not o: continue
+            gap = max(o[1] - pc[3], pc[1] - o[3])     # вертикальный зазор (отрицательный — пересечение)
+            if gap < GAP and not (o[2] < pc[0] or o[0] > pc[2]):
+                errs.append(f'PRODUCT  продукт ближе {GAP * K:.0f} px к {sel}: зазор {gap * K:.0f} px — уменьшить продукт, не перекрывать')
     # 4) всё видно за 1 c до конца
     for i in range(0, 6):
         t = a.t1 - 1 + i * .2

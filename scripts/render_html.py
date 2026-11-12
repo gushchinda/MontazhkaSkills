@@ -13,6 +13,7 @@ ap.add_argument('html'); ap.add_argument('words'); ap.add_argument('t0', type=fl
 ap.add_argument('--fps', type=int, default=30); ap.add_argument('--size', default='1440x2560'); ap.add_argument('--preview')
 ap.add_argument('--alpha', action='store_true', help='прозрачный фон -> .mov ProRes 4444 для оверлея')
 ap.add_argument('--cfg', help='JSON-файл -> window.CFG (параметры шаблона)')
+ap.add_argument('--jpeg', action='store_true', help='кадры JPEG q95 вместо PNG (в 2–3 раза быстрее); только для непрозрачных слоёв, с --alpha игнорируется')
 a = ap.parse_args()
 W_, H_ = map(int, a.size.split('x')); scale = W_ / 720
 
@@ -33,10 +34,12 @@ with sync_playwright() as pw:
             pg.evaluate(f"render({t})"); pg.screenshot(path=f"{a.out}_{t:05.2f}.png", omit_background=a.alpha)
         sys.exit()
     d = tempfile.mkdtemp(); n = round((a.t1 - a.t0) * a.fps)
+    JPG = a.jpeg and not a.alpha   # альфа нужна только PNG
+    ext = 'jpg' if JPG else 'png'
     for i in range(n):
-        pg.evaluate(f"render({a.t0 + i / a.fps})"); pg.screenshot(path=f"{d}/f{i:05d}.png", omit_background=a.alpha)
+        pg.evaluate(f"render({a.t0 + i / a.fps})"); pg.screenshot(path=f"{d}/f{i:05d}.{ext}", omit_background=a.alpha, **({'type': 'jpeg', 'quality': 95} if JPG else {}))
     b.close()
 enc = (['-c:v', 'prores_ks', '-profile:v', '4444', '-pix_fmt', 'yuva444p10le'] if a.alpha
        else ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '16', '-preset', 'medium'])
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(a.fps), '-i', f'{d}/f%05d.png', *enc, a.out], check=True)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(a.fps), '-i', f'{d}/f%05d.{ext}', *enc, a.out], check=True)
 print(a.out, n, 'frames')
