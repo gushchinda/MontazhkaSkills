@@ -18,13 +18,17 @@ description: Use when the editing team (Монтажка) generates ad videos �
 | Говорящая голова (UGC) из реального фото — основной способ | `rules/ugc-video-from-photo.md` + `rules/ugc-realistic-face.md` | `scripts/ugc_from_photo.py` + `projects/<проект>/ugc.json`, `prompts/` |
 | Требования к лицу и свету | `rules/ugc-realistic-face.md` | `faces/`, `scripts/ugc_keyframe.py`, Kling на fal |
 | Перечисления внутри UGC | `rules/faceless-graphics.md` → «Перечисления внутри UGC» | `templates/enum_overlay/` + `projects/<проект>/overlay.json` |
+| Эндкарта (иконка из App Store, шрифты, без обводки) | `rules/end-card.md` | `templates/end_card/` + `projects/<проект>/brand/app_icon_1024.png` |
+| Проверка на нейрослоп после генерации | `rules/ugc-video-from-photo.md`, шаг 10 | `scripts/slop_check.py` |
 | Сценарий | `rules/ugc-script-format.md` (теги `[ENUM]`, `[BIG]`, `[DELTA]`, `[KEY]`) | — |
 
 ## Порядок работы
 1. Сценарий в формате `ugc-script-format.md`, у каждого перечисления тег `[ENUM]`.
 2. Озвучка → `mlx_whisper --word-timestamps True -f json` → тайминги слов. Вся графика садится на эти тайминги.
 3. Графика рендерится из HTML (`window.render(t)`) в 1440×2560/30 fps, поверх видео — с альфой.
-4. Перед сдачей — лист кадров (`ffmpeg -vf fps=1,tile=6x5`) и проверка по чек-листам правил.
+4. Каждый сгенерированный клип — `scripts/slop_check.py` и просмотр листов глазами (нейрослоп), до сборки.
+5. Эндкарта — по `rules/end-card.md` (оригинальная иконка из стора, Inter Tight/Inter, без обводок).
+6. Перед сдачей — лист кадров (`ffmpeg -vf fps=1,tile=6x5`) и проверка по чек-листам правил.
 
 ## Ключи
 `FAL_KEY` в окружении (fal.ai: nano-banana-pro для кейфреймов, Kling для видео). В репозиторий ключи не коммитим.
@@ -38,4 +42,5 @@ projects/<проект>/
   ugc_edit.json     # порядок клипов, блюр, эндкарта (scripts/ugc_build.py)
   script.md         # сценарий в формате rules/ugc-script-format.md
   screens/          # скрины приложения для кадров с телефоном
+  brand/app_icon_1024.png  # иконка из App Store (rules/end-card.md)
 ```

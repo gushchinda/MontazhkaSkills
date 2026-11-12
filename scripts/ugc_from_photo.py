@@ -7,8 +7,10 @@ python3 scripts/ugc_from_photo.py video  <project/ugc.json> <outdir>
 
 frames (nano-banana-pro/edit), всё в локации и свете исходного фото:
   kf_a0  — проход 1: тот же человек, кадр фронталки, жест gesture_a (показывает prop), говорит
-  kf_a   — проход 2: неузнаваемо другое лицо по persona, лицо чуть недосвечено
+  kf_a   — проход 2: неузнаваемо другое лицо по persona
   kf_b   — тот же новый человек, жест gesture_b, другой угол
+  проход 3 (A3, relight): kf_a и kf_b отдельно переосвещаются «лицо на ступень темнее фона»
+           (в проходе 2 модель суффикс недосвета игнорирует, проверено 12.11.2026); до прохода — *_lit.png
   kf_ph1..N — рука держит телефон с экраном из screens[i], prop на руке, лица нет
 video: Kling AI Avatar (kf_a+talk[0], kf_b+talk[1]) и Kling i2v (телефоны) параллельно,
   затем ugc_build.py по шаблону edit_template (src talk1/talk2/phoneN подставляются из outdir).
@@ -22,7 +24,8 @@ import ugc_kling
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 P = {k: (ROOT / 'prompts' / f).read_text().strip() for k, f in {
-    'persona': 'persona_default.txt', 'lofi': 'lofi_suffix.txt', 'dim': 'face_underlit_suffix.txt'}.items()}
+    'persona': 'persona_default.txt', 'lofi': 'lofi_suffix.txt', 'dim': 'face_underlit_suffix.txt',
+    'relight': 'relight_underlit.txt'}.items()}
 
 DEFAULTS = {
     "gesture_a": "mouth slightly open as if talking, natural friendly expression",
@@ -70,21 +73,35 @@ def gen(prompt, imgs, out):
     return _dl(r["images"][0]["url"], str(out))
 
 
+def relight(img):
+    """Проход A3: отдельный проход «только свет» (лицо темнее фона). Исходник сохраняется как *_lit.png."""
+    img = pathlib.Path(img); lit = img.with_name(img.stem + '_lit.png')
+    if not lit.exists(): img.rename(lit)
+    return gen(P['relight'], [lit], img)
+
+
 def frames(cfg, photo, outdir):
     c, f = load(cfg)
+    a2, b = A2.format(**f), B.format(**f)
+    # правило «лицо недосвечено» нельзя потерять: суффикс обязан быть в промптах лица, а свет — отдельным проходом
+    assert P['dim'] in a2 and P['dim'] in b, 'face_underlit_suffix не попал в промпт A2/B'
+    assert 'darker than the background' in P['relight'], 'prompts/relight_underlit.txt пустой или изменён'
     o = pathlib.Path(outdir); o.mkdir(parents=True, exist_ok=True)
     gen(A.format(**f), [photo], o / 'kf_a0.png')
-    gen(A2.format(**f), [o / 'kf_a0.png'], o / 'kf_a.png')
-    jobs = [(B.format(**f), [photo, o / 'kf_a.png'], o / 'kf_b.png')]
+    gen(a2, [o / 'kf_a0.png'], o / 'kf_a.png')
+    jobs = [(b, [photo, o / 'kf_a.png'], o / 'kf_b.png')]
     jobs += [(PH.format(**f), [photo, o / 'kf_a.png', ROOT / s], o / f'kf_ph{i + 1}.png')
              for i, s in enumerate(c['screens'])]
     with cf.ThreadPoolExecutor() as ex:
         print(list(ex.map(lambda j: gen(*j), jobs)))
+    with cf.ThreadPoolExecutor() as ex:  # A3: свет отдельным проходом
+        print(list(ex.map(relight, [o / 'kf_a.png', o / 'kf_b.png'])))
 
 
 def video(cfg, outdir):
     c, _ = load(cfg)
     o = pathlib.Path(outdir)
+    assert (o / 'kf_a_lit.png').exists() and (o / 'kf_b_lit.png').exists(), 'нет прохода A3 (relight): запусти frames заново'
     t1, t2 = (str(ROOT / t) for t in c['talk'])
     jobs = [lambda: ugc_kling.avatar(str(o / 'kf_a.png'), t1, str(o / 'talk1.mp4'), c['avatar_prompts'][0]),
             lambda: ugc_kling.avatar(str(o / 'kf_b.png'), t2, str(o / 'talk2.mp4'), c['avatar_prompts'][1])]
@@ -99,6 +116,9 @@ def video(cfg, outdir):
     for k in ('audio', 'overlay'):
         e[k] = str(ROOT / e[k])
     json.dump(e, open(o / 'edit.json', 'w'), indent=1)
+    clips = [str(p) for p in sorted(o.glob('talk*.mp4')) + sorted(o.glob('phone*.mp4'))]
+    subprocess.run([sys.executable, str(ROOT / 'scripts/slop_check.py'), *clips, '--out', str(o / 'slop')], check=True)
+    print('СМОТРИ листы', o / 'slop', '— нейрослоп проверяется глазами до сборки (rules/ugc-video-from-photo.md, шаг 10)')
     subprocess.run([sys.executable, str(ROOT / 'scripts/ugc_build.py'), str(o / 'edit.json'), str(o / 'final.mp4')],
                    check=True, cwd=ROOT)
 
