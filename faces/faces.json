@@ -1,0 +1,6 @@
+[
+  {"id": "m01", "src": "realman_for_ugc/01.jpg", "sex": "m", "age_photo": 48, "age_range": [48, 62], "look": "grey temples, salt-and-pepper beard, light eyes", "fits": ["longevity", "health trackers", "finance", "dad"]},
+  {"id": "m02", "src": "realman_for_ugc/02.jpg", "sex": "m", "age_photo": 40, "age_range": [35, 48], "look": "dark hair, greying stubble, hoodie", "fits": ["productivity", "apps", "travel"]},
+  {"id": "m03", "src": "realman_for_ugc/03.jpg", "sex": "m", "age_photo": 40, "age_range": [35, 50], "look": "short hair, stubble, in car", "fits": ["commute", "finance", "mental health"]},
+  {"id": "m04", "src": "realman_for_ugc/04.jpg", "sex": "m", "age_photo": 38, "age_range": [32, 45], "look": "athletic, tank top, mirror selfie", "fits": ["fitness", "nutrition", "glp1", "trackers"]}
+]
