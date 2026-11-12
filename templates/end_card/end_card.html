@@ -101,7 +101,7 @@ const eo=x=>1-Math.pow(1-cl(x),3);
 const spring=x=>{x=cl(x);return 1-Math.exp(-6*x)*Math.cos(9*x)};   // пружина с лёгким перелётом
 function inn(el,t,a,dy=36,s0=.94){const k=spring(p(t,a,.7));el.style.opacity=eo(p(t,a,.3));el.style.transform=`translateY(${(1-k)*dy}px) scale(${s0+(1-s0)*k})`}
 window.render=function(T){const t=T-(C.t0||0),D=C.dur||3;
- $('from').style.opacity=1-eo(p(t,0,.35));                       // мягкий переход из последнего кадра ролика
+ {const x=p(t,0,.4);$('from').style.opacity=1-x*x*(3-2*x);}          // мягкий переход: smoothstep 0.4 c (без скачка, который cut_check примет за склейку)
  $('bg').style.transform=`scale(${1.02+.03*p(t,0,D)})`;
  $('glow').style.transform=`translate(${Math.sin(t*.9)*30}px,${Math.cos(t*.7)*24}px)`;   // фон живой, без статики
  const k=spring(p(t,.1,.8));ic.style.opacity=eo(p(t,.1,.3));
