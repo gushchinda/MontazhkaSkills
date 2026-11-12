@@ -5,6 +5,10 @@ Faceless-момент — кусок ролика без лица: цифры, �
 (5.4–27.0 c, проект example-app) и кадр `bad_examples/05_bioage_faceless_before.jpg`: мелкий системный шрифт, одинаковые белые карточки, всё появляется разом и стоит,
 субтитры дублируют то, что уже написано, цифры не играют. Хороший: `good_examples/01_faceless_kinetic.mp4` и `good_examples/05_bioage_faceless_after.jpg` (та же сцена после правки: тёмный фон с зерном, крупные цифры Inter Tight, один текстовый слой).
 
+Ещё один плохой пример: `bad_examples/06_static_cards_system_font.png` (Biological age, Apple Watch): белые одинаковые
+карточки с мелкими цифрами системным шрифтом, без иерархии и движения. После правки: `good_examples/06_kinetic_cards_designed.png`.
+Каждый экран проходит дизайн-шаг `rules/design-pass.md` (бриф, 3 превью, `scripts/design_lint.py`) до рендера видео.
+
 ## Обязательно для любой опции
 
 1. **Шрифт.** Только гротеск с жирными начертаниями: Inter Tight 800–900 (по умолчанию), Manrope 800,
