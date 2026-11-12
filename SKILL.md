@@ -22,6 +22,12 @@ description: Use when the editing team (Монтажка) generates ad videos �
 | Проверка на нейрослоп после генерации | `rules/ugc-video-from-photo.md`, шаг 10 | `scripts/slop_check.py` |
 | Сценарий | `rules/ugc-script-format.md` (теги `[ENUM]`, `[BIG]`, `[DELTA]`, `[KEY]`) | — |
 
+## Общие требования к любой графике (faceless, плашки, субтитры, эндкарта)
+- Шрифты только несистемные: Inter Tight / Inter (по умолчанию), Manrope, Space Grotesk. SF, Arial и Helvetica запрещены.
+- Антиалиасинг: рендер из HTML в 1440×2560 (×2), `crf ≤ 18`, проверка кропом ×2. Никаких stroke и белых обводок у текста.
+- Иконка бренда — оригинал из App Store, скругление 22.37 %, без обводки (`rules/end-card.md`).
+- Faceless-инфографика — `rules/faceless-graphics.md`: крупные цифры, появление по словам, один текстовый слой, зерно.
+
 ## Порядок работы
 1. Сценарий в формате `ugc-script-format.md`, у каждого перечисления тег `[ENUM]`.
 2. Озвучка → `mlx_whisper --word-timestamps True -f json` → тайминги слов. Вся графика садится на эти тайминги.
