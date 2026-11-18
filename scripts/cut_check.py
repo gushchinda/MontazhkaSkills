@@ -11,6 +11,12 @@ python3 scripts/cut_check.py <final.mp4> [<final2.mp4> ...] [--ref <оригин
           (клип короче отрезка и добит последним кадром). Спокойная графика с «дышащим» фоном сюда не попадает.
   BLACK   чёрный кадр (средняя яркость < 8).
   CLICK   щелчок в звуке на склейке: скачок отсчёта ≥ 10× медианы в ±10 мс от склейки.
+  JUMPIN  отрезок начинается посреди движения: в первые 0.5 c после склейки картинка резко ездит
+          (кадр-к-кадру ≥ 8), а дальше успокаивается (в 3+ раза тише). Типично для скринкаста, взятого
+          с точки входа посреди анимации интерфейса: закрывается шторка, въезжает следующий экран
+          (случай 18.11.2026: 0.5 c «прыгающего» UI перед нужным экраном скринкаста).
+  JUMPOUT то же на выходе: последние 0.5 c перед склейкой резко ездят, а до этого было спокойно
+          (точка выхода режет начало следующей анимации). Последняя склейка (вход эндкарты) не проверяется.
 Список склеек печатается всегда — сверь его с монтажным планом.
 """
 import sys, subprocess, argparse, numpy as np
@@ -48,6 +54,23 @@ for v in a.videos:
         run = run + 1 if x else 0
         if run >= 5 and any(0 <= c - (i + 1) <= a.fps * .5 for c in cuts) and (i + 1 >= len(same) or not same[i + 1]):
             errs.append(f'FREEZE {(i - run + 1) / a.fps:.2f}–{(i + 1) / a.fps:.2f} c перед склейкой')
+    # вход/выход посреди движения: резкая анимация в 0.5 c у склейки при спокойной картинке дальше
+    W, B = int(a.fps * .5), int(a.fps)
+    flash_frames = {k for c1, c2 in flashes for k in range(c1, c2 + 1)}
+    for c in cuts:
+        if c in flash_frames: continue
+        # последний отрезок — эндкарта: её вход (растворение, въезд кнопки) задуман анимацией и проверяется по rules/end-card.md
+        if c == cuts[-1]: continue
+        nxt = min([x for x in cuts if x > c] + [len(d) + 1])
+        head, body = d[c:min(c + W, nxt - 1)], d[c + W:min(c + W + B, nxt - 1)]
+        if len(head) >= 5 and len(body) >= 10 and head.max() >= 8 and head.mean() > 3 * max(float(body.mean()), 1.0):
+            k = c + int(np.argmax(head))
+            errs.append(f'JUMPIN {c / a.fps:.2f} c: после склейки {len(head)} кадр. анимации (пик {head.max():.0f} на {k / a.fps:.2f} c), '
+                        f'потом спокойно — сдвинуть точку входа на {(c + int(np.nonzero(head >= 3)[0].max()) + 1) / a.fps:.2f} c')
+        prv = max([x for x in cuts if x < c] + [0])
+        tail, before = d[max(c - 1 - W, prv):c - 1], d[max(c - 1 - W - B, prv):max(c - 1 - W, prv)]
+        if len(tail) >= 5 and len(before) >= 10 and tail.max() >= 8 and tail.mean() > 3 * max(float(before.mean()), 1.0):
+            errs.append(f'JUMPOUT {c / a.fps:.2f} c: последние {len(tail)} кадр. перед склейкой — начало анимации, сдвинуть точку выхода раньше')
     for i, m in enumerate(f.mean(axis=(1, 2))):
         if m < 8:
             errs.append(f'BLACK  {i / a.fps:.3f} c'); break
