@@ -21,6 +21,7 @@ description: Use when the editing team (Монтажка) generates ad videos �
 | Дизайн каждого экрана графики (бриф, превью, линтер) | `rules/design-pass.md` | `scripts/design_lint.py`, `scripts/text_guard.py` |
 | Эндкарта (иконка из App Store, шрифты, без обводки) | `rules/end-card.md` | `templates/end_card/` + `projects/<проект>/brand/app_icon_1024.png` |
 | Проверка эндкарты и ворота перед выгрузкой | `rules/end-card.md` → «Ворота перед выгрузкой» | `scripts/endcard_check.py`, `scripts/endcard_review.py`, `scripts/release_gate.py` |
+| Один герой на весь ролик (хук = скринкаст = все сцены) | `rules/character-continuity.md` | `scripts/character_check.py` |
 | Финальная проверка пачки (одна, в конце) | этот файл → «Порядок работы», шаг 5 | `scripts/check_all.py` |
 | Проверка на нейрослоп после генерации | `rules/ugc-video-from-photo.md`, шаг 10 | `scripts/slop_check.py` |
 | Сценарий | `rules/ugc-script-format.md` (теги `[ENUM]`, `[BIG]`, `[DELTA]`, `[KEY]`) | — |
@@ -46,6 +47,8 @@ description: Use when the editing team (Монтажка) generates ad videos �
    в размере таймлайна (`--size 1080x1920`, `ugc_build.py` не масштабирует оверлей), непрозрачные слои — с `--jpeg`.
    Эндкарта — по `rules/end-card.md`.
 5. **Одна финальная проверка всей пачки:** `python3 scripts/check_all.py <final1.mp4> <final2.mp4> ...`
+   и `python3 scripts/character_check.py <те же ролики> --out check/cast` (один герой на весь ролик,
+   `rules/character-continuity.md`: человек на экране приложения = герой хука)
    (cut_check по всем роликам параллельно + лист кадров на пачку + листы стыков ролик→эндкарта). Смотрим
    2 листа глазами, правим только то, что упало, и проверяем только исправленные ролики.
 6. Нейрослоп (`scripts/slop_check.py`) — только на новых сгенерированных клипах, один раз, до монтажа; уже
