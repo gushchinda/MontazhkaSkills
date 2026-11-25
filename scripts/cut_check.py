@@ -11,13 +11,73 @@ python3 scripts/cut_check.py <final.mp4> [<final2.mp4> ...] [--ref <оригин
           (клип короче отрезка и добит последним кадром). Спокойная графика с «дышащим» фоном сюда не попадает.
   BLACK   чёрный кадр (средняя яркость < 8).
   CLICK   щелчок в звуке на склейке: скачок отсчёта ≥ 10× медианы в ±10 мс от склейки.
+  JUMPIN  отрезок начинается посреди движения: в первые 0.5 c после склейки картинка резко ездит
+          (кадр-к-кадру ≥ 8), а дальше успокаивается (в 3+ раза тише). Типично для скринкаста, взятого
+          с точки входа посреди анимации интерфейса: закрывается шторка, въезжает следующий экран
+          (случай 18.11.2026: 0.5 c «прыгающего» UI перед нужным экраном скринкаста).
+  JUMPOUT то же на выходе: последние 0.5 c перед склейкой резко ездят, а до этого было спокойно
+          (точка выхода режет начало следующей анимации). Последняя склейка (вход эндкарты) не проверяется.
 Список склеек печатается всегда — сверь его с монтажным планом.
+
+Сигнал монтажёру и ответ «Всё окей» (rules/check-override.md):
+  На каждую ошибку печатается блок СИГНАЛ: что нашли, где (секунда и кадр), почему это считается браком,
+  лист кадров вокруг места (--signals, по умолчанию check/signals) и готовая строка для ответа.
+  Если монтажёр посмотрел лист и это задумано, он добавляет строку в check_acks.txt (рядом с роликом
+  или в текущей папке, или --acks <файл>):
+      <имя_ролика.mp4> | <КОД> <секунда> | Всё окей | <кто> | <дата> | <почему так задумано>
+  Такая ошибка печатается как ACK и не валит проверку. Ответ привязан к коду и секунде (±0.15 c):
+  если ролик перемонтировали и ошибка сдвинулась, сигнал придёт снова.
 """
-import sys, subprocess, argparse, numpy as np
+import sys, re, pathlib, subprocess, argparse, numpy as np
 
 ap = argparse.ArgumentParser(); ap.add_argument('videos', nargs='+'); ap.add_argument('--fps', type=float, default=30); ap.add_argument('--ref')
+ap.add_argument('--acks', action='append', default=[], help='файл с ответами «Всё окей» (можно несколько)')
+ap.add_argument('--signals', default='check/signals', help='куда класть листы кадров для монтажёра')
 a = ap.parse_args()
 bad_total = 0
+
+WHY = {
+    'FLASH': 'кусок в 1–6 кадров резко отличается от соседей: зритель видит мелькание чужого кадра',
+    'FREEZE': 'картинка стоит 6+ кадров перед склейкой: клип короче отрезка и добит стоп-кадром',
+    'BLACK': 'чёрный кадр посреди ролика',
+    'CLICK': 'щелчок в звуке на склейке',
+    'JUMPIN': 'отрезок начинается посреди резкого движения (часто хвост анимации интерфейса): читается как скачок',
+    'JUMPOUT': 'отрезок кончается на начале резкого движения: читается как скачок',
+}
+OK_WORDS = ('всё окей', 'все окей', 'всё ок', 'все ок')
+
+
+def load_acks(video):
+    files = [pathlib.Path(x) for x in a.acks] + [pathlib.Path(video).parent / 'check_acks.txt', pathlib.Path('check_acks.txt')]
+    out, seen = [], set()
+    for fp in files:
+        fp = fp.resolve()
+        if fp in seen or not fp.exists(): continue
+        seen.add(fp)
+        for line in fp.read_text(encoding='utf-8').splitlines():
+            parts = [x.strip() for x in line.split('|')]
+            if len(parts) < 3 or line.lstrip().startswith('#'): continue
+            m = re.match(r'([A-Z]+)\s+([0-9.]+)', parts[1])
+            if not m or parts[2].lower().rstrip('!. ') not in OK_WORDS: continue
+            out.append((parts[0], m.group(1), float(m.group(2)), ' | '.join(parts[3:]), fp.name))
+    return out
+
+
+def err_key(e):
+    m = re.match(r'([A-Z]+)\s+([0-9.]+)', e)
+    return (m.group(1), float(m.group(2))) if m else (e.split()[0], -1.0)
+
+
+def signal_sheet(video, code, t):
+    d = pathlib.Path(a.signals); d.mkdir(parents=True, exist_ok=True)
+    o = d / f'{pathlib.Path(video).stem}_{code}_{t:.2f}.jpg'
+    s = max(0, round((t - .3) * a.fps)); e = round((t + .6) * a.fps)
+    # номер кадра рисуем до select: это номер кадра в ролике (секунда = кадр / fps), pts у контейнера бывает со сдвигом
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', video, '-vf',
+                    "scale=180:-2,drawtext=text='кадр %{n}':x=6:y=6:fontsize=18:fontcolor=yellow:box=1:boxcolor=black@0.6,"
+                    f"select='between(n\\,{s}\\,{e})*not(mod(n-{s}\\,2))',tile=7x2:padding=2",
+                    '-vsync', '0', '-frames:v', '1', str(o)], capture_output=True)
+    return o if o.exists() else None
 for v in a.videos:
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', v, '-vf', 'scale=90:160', '-f', 'rawvideo', '-pix_fmt', 'gray', '-'],
                          capture_output=True).stdout
@@ -48,6 +108,23 @@ for v in a.videos:
         run = run + 1 if x else 0
         if run >= 5 and any(0 <= c - (i + 1) <= a.fps * .5 for c in cuts) and (i + 1 >= len(same) or not same[i + 1]):
             errs.append(f'FREEZE {(i - run + 1) / a.fps:.2f}–{(i + 1) / a.fps:.2f} c перед склейкой')
+    # вход/выход посреди движения: резкая анимация в 0.5 c у склейки при спокойной картинке дальше
+    W, B = int(a.fps * .5), int(a.fps)
+    flash_frames = {k for c1, c2 in flashes for k in range(c1, c2 + 1)}
+    for c in cuts:
+        if c in flash_frames: continue
+        # последний отрезок — эндкарта: её вход (растворение, въезд кнопки) задуман анимацией и проверяется по rules/end-card.md
+        if c == cuts[-1]: continue
+        nxt = min([x for x in cuts if x > c] + [len(d) + 1])
+        head, body = d[c:min(c + W, nxt - 1)], d[c + W:min(c + W + B, nxt - 1)]
+        if len(head) >= 5 and len(body) >= 10 and head.max() >= 8 and head.mean() > 3 * max(float(body.mean()), 1.0):
+            k = c + int(np.argmax(head))
+            errs.append(f'JUMPIN {c / a.fps:.2f} c: после склейки {len(head)} кадр. анимации (пик {head.max():.0f} на {k / a.fps:.2f} c), '
+                        f'потом спокойно — сдвинуть точку входа на {(c + int(np.nonzero(head >= 3)[0].max()) + 1) / a.fps:.2f} c')
+        prv = max([x for x in cuts if x < c] + [0])
+        tail, before = d[max(c - 1 - W, prv):c - 1], d[max(c - 1 - W - B, prv):max(c - 1 - W, prv)]
+        if len(tail) >= 5 and len(before) >= 10 and tail.max() >= 8 and tail.mean() > 3 * max(float(before.mean()), 1.0):
+            errs.append(f'JUMPOUT {c / a.fps:.2f} c: последние {len(tail)} кадр. перед склейкой — начало анимации, сдвинуть точку выхода раньше')
     for i, m in enumerate(f.mean(axis=(1, 2))):
         if m < 8:
             errs.append(f'BLACK  {i / a.fps:.3f} c'); break
@@ -64,7 +141,19 @@ for v in a.videos:
     cl = clicks(v, cuts) - (clicks(a.ref, cuts) if a.ref else set())
     for c in sorted(cl): errs.append(f'CLICK  {c / a.fps:.3f} c')
     print(f'== {v}\n   склейки: ' + ', '.join(f'{c / a.fps:.2f}' for c in cuts))
-    for e in errs: print('   ERROR', e)
-    print('   OK' if not errs else f'   ошибок: {len(errs)}')
-    bad_total += bool(errs)
+    acks, name, left = load_acks(v), pathlib.Path(v).name, []
+    for e in errs:
+        code, t = err_key(e)
+        ack = next((k for k in acks if k[0] == name and k[1] == code and abs(k[2] - t) <= .15), None)
+        if ack:
+            print(f'   ACK   {e}  — монтажёр: «Всё окей» ({ack[3] or "без комментария"}; {ack[4]})')
+            continue
+        left.append(e)
+        sheet = signal_sheet(v, code, t) if t >= 0 else None
+        print('   ERROR', e)
+        print(f'   СИГНАЛ монтажёру: {code} на {t:.2f} c (кадр {round(t * a.fps)}) — {WHY.get(code, "см. описание кода")}.')
+        if sheet: print(f'          кадры вокруг места: {sheet}')
+        print(f'          если так задумано — ответ в check_acks.txt: {name} | {code} {t:.2f} | Всё окей | <кто> | <дата> | <почему>')
+    print('   OK' if not left else f'   ошибок: {len(left)}')
+    bad_total += bool(left)
 sys.exit(1 if bad_total else 0)
