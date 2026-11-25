@@ -1,6 +1,6 @@
 """Проверка склеек готового ролика (финальная проверка, rules/ugc-video-from-photo.md и rules/end-card.md).
 
-python3 scripts/cut_check.py <final.mp4> [<final2.mp4> ...] [--ref <оригинал.mp4>]
+python3 scripts/cut_check.py <final.mp4> [<final2.mp4> ...] [--ref <original.mp4>]
   --ref: щелчок, который есть и в оригинале в ту же секунду (звук взят из оригинала целиком), не считается ошибкой.
 
 Ошибки (код выхода 1):

@@ -2,7 +2,7 @@
 
 Основной режим — restage: берём кадр-образец (референс сцены) и пересобираем его
 с другим человеком из базы лиц. Свет, сеттинг, локация и композиция — как в образце.
-  python3 scripts/ugc_keyframe.py restage <scene_ref.png> <face.jpg|-> <out.png> ["уточнение"] [кадр_с_персонажем.png ...]
+  python3 scripts/ugc_keyframe.py restage <scene_ref.png> <face.jpg|-> <out.png> ["уточнение"] [character_ref.png ...]
   (face = "-" для кадров без лица: руки, телефон)
 
 Старый режим — scene: лицо + текстовое описание сцены (хуже по реализму света).
