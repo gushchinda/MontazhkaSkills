@@ -10,6 +10,7 @@ python3 scripts/check_all.py <final1.mp4> [<final2.mp4> ...] [--out check] [--en
   4) for_editor.md — сигнал монтажёру по каждой ошибке: что, где, почему, лист кадров и строка для ответа
      «Всё окей» (rules/check-override.md). Ошибки, на которые монтажёр ответил «Всё окей» в check_acks.txt,
      печатаются как ACK и не валят проверку.
+  5) имя каждого ролика — только английский/ASCII (SKILL.md → «Имена файлов»).
 Печатает короткую таблицу OK/FAIL. Ничего не блокирует и не копирует — это быстрая проверка перед отдачей.
 Тяжёлые ворота (release_gate.py и т.д.) — только для выкладки заказчику.
 """
@@ -68,7 +69,12 @@ md = ['# Сигнал монтажёру', '',
       'По каждой ошибке: посмотри лист кадров. Если это брак — поправь и пришли ролик заново.',
       'Если так задумано — добавь готовую строку в `check_acks.txt` (рядом с роликом), вписав себя, дату и почему.',
       'Без строки «Всё окей» ошибка остаётся FAIL. Правило: rules/check-override.md', '']
+NAME_OK = re.compile(r'^[A-Za-z0-9._-]+$')  # SKILL.md → «Имена файлов»: только английский/ASCII
 for i, v, rc, errs, acks, sig in res:
+    nm = pathlib.Path(v.split('@')[0]).name
+    if not NAME_OK.match(nm):
+        e = f'NAME: имя файла не на английском/ASCII: {nm!r} — переименовать (SKILL.md → «Имена файлов»)'
+        rc = rc or 1; errs = errs + [e]; sig = sig + [e]
     bad += rc != 0
     name = pathlib.Path(v.split('@')[0]).name
     print(f"{'OK  ' if rc == 0 else 'FAIL'} {name}" + (f"  {' | '.join(errs)}" if errs else '')

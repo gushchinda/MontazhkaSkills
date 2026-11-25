@@ -1,13 +1,14 @@
 """Ворота перед выгрузкой ролика (обязательно, обойти нельзя): rules/end-card.md, SKILL.md «Порядок работы».
 
 python3 scripts/release_gate.py <final.mp4> <dest> --review <endcard_review.md> --endcard <html> <cfg.json> <t0> <t1>
-                               [--lint <html> <words|-> <t0> <t1> <cfg.json>]... [--ref <оригинал.mp4>]
+                               [--lint <html> <words|-> <t0> <t1> <cfg.json>]... [--ref <original.mp4>]
 
 Копирует final.mp4 в dest ТОЛЬКО если (и потом обязательно scripts/final_endcard_sheet.py по выложенному файлу):
   1) scripts/cut_check.py → 0 (ошибки с ответом монтажёра «Всё окей» в check_acks.txt не мешают, rules/check-override.md);
   2) scripts/endcard_check.py для эндкарты ЭТОГО ролика → 0 (фон и продукт у каждого ролика свои);
   3) scripts/design_lint.py для каждого --lint → 0;
   4) в endcard_review.md все 7 оценок заполнены и каждая ≥ 4;
+  0) имя final.mp4 и dest — только английский/ASCII (SKILL.md → «Имена файлов»);
   5) шов: первый кадр эндкарты (--seam) не отличается от последнего кадра ролика (разница ≤ 5).
 Иначе печатает, что не прошло, и выходит с кодом 1, ничего не копируя.
 """
@@ -19,6 +20,10 @@ ap.add_argument('--endcard', nargs=4, required=True); ap.add_argument('--lint', 
 ap.add_argument('--ref'); ap.add_argument('--seam', type=int, required=True, help='номер первого кадра эндкарты')
 a = ap.parse_args()
 fails = []
+for f in (a.final, a.dest):
+    nm = pathlib.Path(f).name
+    if not re.match(r'^[A-Za-z0-9._-]+$', nm):
+        fails.append(f'NAME: имя файла не на английском/ASCII: {nm!r} (SKILL.md → «Имена файлов»)')
 def run(name, cmd):
     r = subprocess.run([sys.executable, *cmd], capture_output=True, text=True)
     if r.returncode: fails.append(f'{name}:\n' + (r.stdout[-800:] or r.stderr[-800:]))
