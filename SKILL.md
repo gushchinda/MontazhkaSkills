@@ -24,6 +24,7 @@ description: Use when the editing team (Монтажка) generates ad videos �
 | Один герой на весь ролик (хук = скринкаст = все сцены) | `rules/character-continuity.md` | `scripts/character_check.py` |
 | Имена файлов и папок (только английский, ASCII) | этот файл → «Имена файлов» | `scripts/check_all.py`, `scripts/release_gate.py` |
 | Финальная проверка пачки (одна, в конце) | этот файл → «Порядок работы», шаг 5 | `scripts/check_all.py` |
+| Ложное срабатывание проверки: сигнал монтажёру и ответ «Всё окей» | `rules/check-override.md` | `check/for_editor.md`, `check_acks.txt` |
 | Проверка на нейрослоп после генерации | `rules/ugc-video-from-photo.md`, шаг 10 | `scripts/slop_check.py` |
 | Сценарий | `rules/ugc-script-format.md` (теги `[ENUM]`, `[BIG]`, `[DELTA]`, `[KEY]`) | — |
 
@@ -69,6 +70,10 @@ description: Use when the editing team (Монтажка) generates ad videos �
    `final_review.md`) — **только когда ролики выкладываем заказчику на Drive** или по прямой просьбе. Если нужен
    просто результат — отдаём после шага 5.
 8. Склейки — по номеру кадра, не по секундам (`trim=end_frame`), иначе мелькает кадр старой эндкарты.
+   Скринкаст режем со спокойного экрана, без хвоста прошлой анимации UI (`cut_check` → `JUMPIN`).
+9. Ролик с FAIL в шаге 5 на Drive не выкладываем, даже «на посмотреть»: сначала правка, потом повторная проверка.
+   Исключение одно: монтажёр получил сигнал (`check/for_editor.md`: что, где, лист кадров) и явно ответил
+   «Всё окей» на эту ошибку в `check_acks.txt` (`rules/check-override.md`). Тогда ошибка идёт как ACK и ролик проходит.
 
 ### Чего не делать (съедает время)
 - Не гонять cut_check / endcard_check / design_lint после каждого ролика и после каждой мелкой правки.
