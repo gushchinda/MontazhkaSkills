@@ -7,6 +7,7 @@ python3 scripts/check_all.py <final1.mp4> [<final2.mp4> ...] [--out check] [--en
   2) contact.jpg — лист кадров пачки: по строке на ролик, 8 кадров равномерно по длине (смотреть глазами);
   3) seams.jpg — стык ролик→эндкарта у каждого ролика: последний кадр ролика, 1-й/6-й кадр эндкарты, финал.
      Начало эндкарты = длительность − --endcard-sec (или задать точно: final.mp4@<кадр>).
+  4) имя каждого ролика — только английский/ASCII (SKILL.md → «Имена файлов»).
 Печатает короткую таблицу OK/FAIL. Ничего не блокирует и не копирует — это быстрая проверка перед отдачей.
 Тяжёлые ворота (release_gate.py и т.д.) — только для выкладки заказчику.
 """
@@ -56,7 +57,11 @@ for kind, name in (('c', 'contact.jpg'), ('s', 'seams.jpg')):
     fc = f"vstack=inputs={k}" if k > 1 else "null"
     subprocess.run(['ffmpeg', '-v', 'error', '-y', *ins, '-filter_complex', fc, '-frames:v', '1', '-q:v', '3', out / name])
 bad = 0
+NAME_OK = re.compile(r'^[A-Za-z0-9._-]+$')  # SKILL.md → «Имена файлов»: только английский/ASCII
 for i, v, rc, errs in res:
+    nm = pathlib.Path(v.split('@')[0]).name
+    if not NAME_OK.match(nm):
+        rc = rc or 1; errs = errs + [f'NAME: имя файла не на английском/ASCII: {nm!r} (SKILL.md → «Имена файлов»)']
     bad += rc != 0
     print(f"{'OK  ' if rc == 0 else 'FAIL'} {pathlib.Path(v.split('@')[0]).name}" + (f"  {' | '.join(errs)}" if errs else ''))
 print(f"итог: {len(res) - bad}/{len(res)} OK · листы: {out / 'contact.jpg'}, {out / 'seams.jpg'} (открыть и посмотреть)")
