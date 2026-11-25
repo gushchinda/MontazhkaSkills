@@ -4,7 +4,7 @@ python3 scripts/release_gate.py <final.mp4> <dest> --review <endcard_review.md> 
                                [--lint <html> <words|-> <t0> <t1> <cfg.json>]... [--ref <оригинал.mp4>]
 
 Копирует final.mp4 в dest ТОЛЬКО если (и потом обязательно scripts/final_endcard_sheet.py по выложенному файлу):
-  1) scripts/cut_check.py → 0;
+  1) scripts/cut_check.py → 0 (ошибки с ответом монтажёра «Всё окей» в check_acks.txt не мешают, rules/check-override.md);
   2) scripts/endcard_check.py для эндкарты ЭТОГО ролика → 0 (фон и продукт у каждого ролика свои);
   3) scripts/design_lint.py для каждого --lint → 0;
   4) в endcard_review.md все 7 оценок заполнены и каждая ≥ 4;
