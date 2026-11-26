@@ -15,6 +15,7 @@ description: Use when the editing team (Монтажка) generates ad videos �
 | Задача | Правило | Инструменты |
 |---|---|---|
 | Цифры, метрики, список шагов без лица | `rules/faceless-graphics.md` (опции A/B/C) | `templates/faceless_kinetic/` + `projects/<проект>/faceless.json`, `scripts/render_html.py` |
+| UGC по существующему видео, в том числе без речи | `rules/reference-action.md` | `scripts/reference_frames.py`, `scripts/ugc_keyframe.py reference-edit`, image-to-video |
 | Говорящая голова (UGC) из реального фото — основной способ | `rules/ugc-video-from-photo.md` + `rules/ugc-realistic-face.md` | `scripts/ugc_from_photo.py` + `projects/<проект>/ugc.json`, `prompts/` |
 | Требования к лицу и свету | `rules/ugc-realistic-face.md` | `faces/`, `scripts/ugc_keyframe.py`, Kling на fal |
 | Перечисления внутри UGC | `rules/faceless-graphics.md` → «Перечисления внутри UGC» | `templates/enum_overlay/` + `projects/<проект>/overlay.json` |
@@ -70,7 +71,7 @@ description: Use when the editing team (Монтажка) generates ad videos �
 Главное правило скорости: **сначала монтаж всей пачки, проверки — один раз в самом конце**, одной командой и
 параллельно. Во время монтажа ничего не проверяем по каждому ролику и не пересобираем ради промежуточных проверок.
 
-1. Сценарий в формате `ugc-script-format.md`, у каждого перечисления тег `[ENUM]`.
+1. Для каждого видео по референсу сначала разбери склейки и фазы действия по `rules/reference-action.md`. В монтажном листе привяжи к каждому плану исходный кадр, промежуточный жест и видимый результат. Сценарий в формате `ugc-script-format.md`, у каждого перечисления тег `[ENUM]`.
 2. Озвучка → whisper word timestamps (`mlx_whisper --word-timestamps True -f json` или whisper.cpp) → тайминги слов.
    Вся графика садится на эти тайминги.
 3. **Дизайн-шаг — один раз на шаблон, не на ролик** (`rules/design-pass.md`): бриф и 3 превью делаем, когда
@@ -82,7 +83,7 @@ description: Use when the editing team (Монтажка) generates ad videos �
    и `python3 scripts/character_check.py <те же ролики> --out check/cast` (один герой на весь ролик,
    `rules/character-continuity.md`: человек на экране приложения = герой хука)
    (cut_check по всем роликам параллельно + лист кадров на пачку + листы стыков ролик→эндкарта). Смотрим
-   2 листа глазами, правим только то, что упало, и проверяем только исправленные ролики.
+   2 листа глазами. Для видео по референсу дополнительно сравни действия в обоих видео на скорости 1× по критериям `rules/reference-action.md`. Затем правим только то, что упало, и проверяем только исправленные ролики.
 6. Нейрослоп (`scripts/slop_check.py`) — только на новых сгенерированных клипах, один раз, до монтажа; уже
    проверенные исходники повторно не гоняем.
 7. Тяжёлые ворота (`scripts/release_gate.py`, `endcard_check.py`, `endcard_review.py`, `final_endcard_sheet.py`,
