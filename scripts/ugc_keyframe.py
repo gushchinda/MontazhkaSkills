@@ -1,6 +1,10 @@
 """Кейфрейм для UGC (nano-banana-pro/edit на fal).
 
-Основной режим — restage: берём кадр-образец (референс сцены) и пересобираем его
+Для видеообразца — минимальная правка самого кадра:
+  python3 scripts/ugc_keyframe.py reference-edit <source.png> <out.png> [approved_face.png] ["уточнение"]
+  Для уточнения без второго фото используй "-" вместо approved_face.png.
+
+Режим restage: берём кадр-образец (референс сцены) и пересобираем его
 с другим человеком из базы лиц. Свет, сеттинг, локация и композиция — как в образце.
   python3 scripts/ugc_keyframe.py restage <scene_ref.png> <face.jpg|-> <out.png> ["уточнение"] [character_ref.png ...]
   (face = "-" для кадров без лица: руки, телефон)
@@ -44,11 +48,26 @@ REALISM = (" Shot on an iPhone front camera, vertical 9:16, handheld selfie fram
            "no text overlays.")
 
 
-def _gen(prompt, images, out):
+def _gen(prompt, images, out, aspect_ratio="9:16"):
     r = fal_client.subscribe("fal-ai/nano-banana-pro/edit", arguments={
         "prompt": prompt, "image_urls": [fal_client.upload_file(p) for p in images],
-        "aspect_ratio": "9:16", "num_images": 1, "resolution": "2K"})
+        "aspect_ratio": aspect_ratio, "num_images": 1, "resolution": "2K"})
     return _dl(r["images"][0]["url"], out)
+
+
+def reference_edit(source, out, face=None, extra=""):
+    """The first input always supplies the scene and this exact phase of the action."""
+    images = [source]
+    prompt = ("Locally edit the visible lead character's face in the FIRST source frame. "
+              "Make a subtle natural change to facial features. Preserve the expression, gaze, "
+              "head pose, hair, hands, clothing, props and every other person. Preserve the "
+              "original framing, room, exposure, shadows, white balance, focus, motion blur, "
+              "noise and compression. No relighting, beauty retouch, restaging or camera move. ")
+    if face and face != "-":
+        images.append(face)
+        prompt += ("Use the SECOND image only for the approved facial identity. Match that face "
+                   "in the pose, expression and lighting of the FIRST frame. ")
+    return _gen(prompt + extra, images, out, aspect_ratio="auto")
 
 
 def restage(scene_ref, face, out, extra="", *more_refs):
@@ -64,4 +83,4 @@ def scene(face, out, text, *refs):
 
 if __name__ == "__main__":
     mode, *args = sys.argv[1:]
-    print({"restage": restage, "scene": scene}[mode](*args))
+    print({"reference-edit": reference_edit, "restage": restage, "scene": scene}[mode](*args))
